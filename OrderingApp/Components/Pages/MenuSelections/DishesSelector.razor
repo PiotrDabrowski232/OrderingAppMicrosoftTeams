@@ -1,0 +1,254 @@
+﻿@page "/DishesSelector/OrderId/{OrderId:guid}"
+@page "/DishesSelector/SignupId/{SignupId:guid}"
+
+@using OrderingApp.Logic.DTO
+@using OrderingApp.Logic.Functions.Command.OrderItems
+@using OrderingApp.Logic.Functions.Query.Order
+@using OrderingApp.Logic.Functions.Query.Restaurant
+@using OrderingApp.Logic.Functions.Query.User
+@using MediatR
+@using OrderingApp.Shared.Exceptions
+@inject IMediator _mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+<h3>DishesSelector</h3>
+
+<div style="margin: 4rem;">
+    @if (!string.IsNullOrEmpty(OrderId.ToString()))
+    {
+            <div style="display: flex; align-items: center;">
+                <FluentSelect Name="Participant" @bind-Value="User" TOption="string" Required Label="Participant">
+                    <FluentOption Value="">Select Participant ...</FluentOption>
+                    @if (IsLoading)
+                    {
+                        <FluentOption>Loading Participants...</FluentOption>
+                    }
+                    else if (CompanyUsers != null && CompanyUsers.Any())
+                    {
+                        foreach (var user in CompanyUsers)
+                        {
+                            <FluentOption Value="@user.Key.ToString()">@user.Value</FluentOption>
+                        }
+                    }
+                    else
+                    {
+                        <FluentOption>No users available</FluentOption>
+                    }
+                </FluentSelect>
+            </div>
+
+    
+    }
+    @if (ListChanged && OrderItems.Any())
+    {
+        <div style="text-align: right; margin-top: 1rem;">
+            <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
+        </div>
+    }
+</div>
+@if (OrderItems.Any())
+{  
+    <div>
+        <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+            <thead>
+                <tr>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Dish Name</th>
+                    <th scope="col">Calories</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in OrderItems)
+                {
+                    <tr>
+                        <td>@x.Amount</td>
+                        <td>@x.Dish.Name</td>
+                        <td>@x.Dish.Calories cal</td>
+                        <td>@x.Dish.Price zł</td>
+                        <td>
+                            <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x.Dish)">
+                                <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                            </button>
+                            <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
+                                <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+                <tr style="border-top: 3px solid black;">
+                    <td colspan="2" style="text-align:end;">Sum: </td>
+                    <td>@SumCalories cal</td>
+                    <td>@Math.Round(SumPrice,2) zł</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+<div>
+    <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+        <thead>
+            <tr>
+                <th scope="col">Dish Name</th>
+                <th scope="col">Calories</th>
+                <th scope="col">Price</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var x in Menu.Main)
+            {
+                <tr>
+                    <td>@x.Name</td>
+                    <td>@x.Calories cal</td>
+                    <td>@x.Price zł</td>
+                    <td>
+                        <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
+                            <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div style="padding-bottom: 4vh;">
+    <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+        <thead>
+            <tr>
+                <th scope="col">Dish Name</th>
+                <th scope="col">Calories</th>
+                <th scope="col">Price</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Menu.Extras)
+            {
+                <tr>
+                    <td>@x.Name</td>
+                    <td>@x.Calories cal</td>
+                    <td>@x.Price zł</td>
+                    <td>
+                        <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
+                            <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    [Parameter]
+    public Guid OrderId { get; set; }
+
+    [Parameter]
+    public Guid SignupId { get; set; }
+
+
+
+    private IDictionary<Guid, string> CompanyUsers = new Dictionary<Guid, string>();
+    private List<OrderItemsDto> OrderItems = new List<OrderItemsDto>();
+    private MenuDto Menu = new();
+    private Guid Restaurant;
+    private int SumCalories;
+    private float SumPrice;
+
+
+    private string User;
+    private bool IsLoading = true;
+    private bool ListChanged = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        CompanyUsers = await _mediator.Send(new GetComapnyUsersQuery(OrderId));
+
+        Restaurant = await _mediator.Send(new GetRestaurantSignedOrderQuery(OrderId));
+
+        Menu = await _mediator.Send(new GetRestaurantDishesExtrasQuery(Restaurant));
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private void AddDish(DishDto dish)
+    {
+        if (OrderItems.Any(x => x.Dish.Id == dish.Id))
+            OrderItems.FirstOrDefault(x => x.Dish.Id == dish.Id).Amount++;
+        else
+            OrderItems.Add(new OrderItemsDto
+            {
+                Amount=1,
+                Dish = dish,
+            });
+
+        CalculateSum();
+
+        StateHasChanged();
+    }
+
+    private void RemoveDish(DishDto dish)
+    {
+        var orderItem = OrderItems.FirstOrDefault(x => x.Dish.Id == dish.Id);
+
+        if (orderItem.Amount > 1)
+            orderItem.Amount--;
+        else
+            OrderItems.Remove(orderItem);
+
+        CalculateSum();
+
+        StateHasChanged();
+    }
+
+    private void CalculateSum()
+    {
+        SumCalories = OrderItems.Sum(x => x.Amount * x.Dish.Calories);
+        SumPrice = OrderItems.Sum(x => x.Amount * x.Dish.Price);
+        ListChanged = true;
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            if (User == null)
+                throw new UserNotAsignedException("Select Participant");
+
+            var signed = CompanyUsers.FirstOrDefault(x => x.Key == Guid.Parse(User));
+
+            var orderComleted = await _mediator.Send(new AddCurrentOrderItemsCommand(OrderId,
+                new OrderSignupsDto { Id = Guid.NewGuid(), SignedUser = signed.Key, UserDisplayName = signed.Value },
+                OrderItems));
+
+            ShowSuccessToast("Assigment created successfully with order items");
+
+            await Task.Delay(3000);
+
+            Navigation.NavigateTo($"/Orderdetails/{orderComleted}");
+        }
+        catch(Exception ex)
+        {
+            ShowErrorToast(ex);
+        }
+    }
+
+    private void ShowSuccessToast(string message)
+    {
+        ToastService.ShowToast(ToastIntent.Success, $"{message}");
+    }
+
+    private void ShowErrorToast(Exception ex)
+    {
+        ToastService.ShowToast(ToastIntent.Error, $"{ex.Message}");
+    }
+}

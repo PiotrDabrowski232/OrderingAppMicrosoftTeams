@@ -1,0 +1,133 @@
+﻿@page "/CreateOrder"
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@using OrderingApp.Logic.DTO
+@using MediatR
+@using OrderingApp.Logic.Functions.Command.OrderCommands
+@using OrderingApp.Logic.Functions.Query.Order
+@using OrderingApp.Logic.Functions.Query.Restaurant
+@inject IMediator _mediator
+@inject IToastService ToastService
+
+<div style="padding-left:1.5vw; padding-top:1vh;">
+    <h2>Specify Order Details</h2>
+
+    <EditForm Model="Order" OnValidSubmit="HandleValidSubmit" novalidate>
+        <DataAnnotationsValidator />
+
+        <FluentStack Orientation="Orientation.Vertical">
+            <div>
+                <FluentTextField Name="Name" @bind-Value="Order.Name" Label="Order Name" Required />
+                <ValidationMessage For="@(() => Order.Name)" />
+            </div>
+
+            <div>
+                <FluentSelect Name="RestaurantName" @bind-Value="Order.RestaurantId" TOption="string" Required Label="Restaurant Picker">
+                    <FluentOption Value="">Select Restaurant ...</FluentOption>
+                    @if (IsLoading)
+                    {
+                        <FluentOption>Loading restaurants...</FluentOption>
+                    }
+                    else if (Restaurants != null && Restaurants.Any())
+                    {
+                        foreach (var restaurant in Restaurants)
+                        {
+                            <FluentOption Value="@restaurant.Key.ToString()">@restaurant.Value</FluentOption>
+                        }
+                    }
+                    else
+                    {
+                        <FluentOption>No restaurants available</FluentOption>
+                    }
+                </FluentSelect>
+                <ValidationMessage For="@(() => Order.RestaurantId)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="MinValue" @bind-Value="Order.MinValue" Label="Min Value" Required />
+                <ValidationMessage For="@(() => Order.MinValue)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="DeliveryCost" @bind-Value="Order.DeliveryCost" Label="Delivery Cost" Required />
+                <ValidationMessage For="@(() => Order.DeliveryCost)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="FreeDeliveryFrom" @bind-Value="Order.FreeDeliveryFrom" Label="Free Delivery From" Required />
+                <ValidationMessage For="@(() => Order.FreeDeliveryFrom)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="PhoneNumber" @bind-Value="Order.PhoneNumber" Label="Phone Number" Required />
+                <ValidationMessage For="@(() => Order.PhoneNumber)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="BankAccountNumber" @bind-Value="Order.BankAccountNumber" Label="Bank Account Number" Required />
+                <ValidationMessage For="@(() => Order.BankAccountNumber)" />
+            </div>
+
+            <div>
+                <FluentSwitch @bind-Value="Order.Notifications" Label="Notifications about order activity">
+                    <span slot="checked-message">On</span>
+                    <span slot="unchecked-message">Off</span>
+                </FluentSwitch>
+            </div>
+
+            <div>
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+            </div>
+        </FluentStack>
+    </EditForm>
+</div>
+
+@code {
+    private OrderDto Order { get; set; } = new OrderDto();
+    private IDictionary<Guid, string> Restaurants { get; set; } = new Dictionary<Guid, string>();
+    private EditContext editContext;
+    private bool IsLoading { get; set; } = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(Order);
+        try
+        {
+            IsLoading = true;
+
+            Restaurants = await _mediator.Send(new GetRestaurantNamesQuery()) ?? new Dictionary<Guid, string>();
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast(ex);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await _mediator.Send(new CreateOrderCommand(Order));
+            ShowSuccessToast();
+
+            Order = new OrderDto();
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast(ex);
+        }
+    }
+
+    private void ShowSuccessToast()
+    {
+        ToastService.ShowToast(ToastIntent.Success, "Order created successfully!");
+    }
+
+    private void ShowErrorToast(Exception ex)
+    {
+        ToastService.ShowToast(ToastIntent.Error, $"Failed to create order: {ex.Message}");
+    }
+}

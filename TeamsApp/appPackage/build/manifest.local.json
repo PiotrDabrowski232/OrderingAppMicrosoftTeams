@@ -1,0 +1,52 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.17",
+    "version": "1.0.0",
+    "id": "6a1b2813-85b0-4fcc-8433-1116c05b4a8e",
+    "developer": {
+        "name": "Teams App, Inc.",
+        "websiteUrl": "https://www.example.com",
+        "privacyUrl": "https://www.example.com/privacy",
+        "termsOfUseUrl": "https://www.example.com/termsofuse"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "OrderingApplocal",
+        "full": "Full name for OrderingApp"
+    },
+    "description": {
+        "short": "Short description of OrderingApp",
+        "full": "Full description of OrderingApp"
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [],
+    "composeExtensions": [],
+    "configurableTabs": [],
+    "staticTabs": [
+        {
+            "entityId": "index",
+            "name": "Home",
+            "contentUrl": "https://localhost:44302/tab",
+            "websiteUrl": "https://localhost:44302/tab",
+            "scopes": [
+                "personal",
+                "groupChat",
+                "team"
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [
+        "localhost"
+    ],
+    "webApplicationInfo": {
+        "id": "d497c55c-bda3-473e-bcf6-d5dbe5bafd2d",
+        "resource": "api://localhost:44302/d497c55c-bda3-473e-bcf6-d5dbe5bafd2d"
+    }
+}
