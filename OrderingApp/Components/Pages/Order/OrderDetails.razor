@@ -8,73 +8,88 @@
 @inject IToastService ToastService
 @inject NavigationManager Navigation
 
-<BackToMainPageLinker TabNumber="1" CustomText="Back to order list" />
 
-@if (Order != null)
+
+@if (isLoading)
 {
-    <div class="d-flex justify-content-between" style="margin: 4rem;">
-        <div class="card shadow-sm" style="flex: 0 0 30%; border-radius: 10%; margin-right: 2rem;">
-            <div class="card-body" style="padding: 2rem;">
-                <h5 class="card-title">Order Information: </h5>
-                <p class="card-text"><strong>Order Name:</strong> @Order.Name</p>
-                <p class="card-text"><strong>Min Value:</strong> @Order.MinValue zł</p>
-                <p class="card-text"><strong>Delivery Cost:</strong> @Order.DeliveryCost zł</p>
-                <p class="card-text"><strong>Free Delivery From:</strong> @Order.FreeDeliveryFrom zł</p>
-                <p class="card-text"><strong>Phone Number:</strong> @Order.PhoneNumber</p>
-                <p class="card-text"><strong>Bank Account Number:</strong> @Order.BankAccountNumber</p>
-                <p class="card-text"><strong>Creation Date:</strong> @Order.CreationDate.ToString("HH:mm yyyy-MM-dd")</p>
-                <p class="card-text"><strong>Restaurant Name:</strong> @Order.RestaurantName</p>
-                <p class="card-text"><strong>Restaurant Type:</strong> @Order.RestaurantType</p>
-                <p class="card-text"><strong>Author:</strong> @Order.Author</p>
-
-                @if (Order.Myorder)
-                {
-                    <button class="btn btn-danger" @onclick="CloseOrder">Close Order</button>
-                }
-            </div>
-        </div>
-
-        <div class="card shadow-sm" style="flex: 0 0 50%; border-radius: 10%; margin-top: 2rem;">
-            <div class="card-body" style="padding: 2rem;">
-                <h5 class="card-title">Participants:</h5>
-                @if (Order.Signups != null && Order.Signups.Any())
-                {
-                    <ul class="list-group">
-                        @foreach (var participant in Order.Signups)
-                        {
-                            <li class="list-group-item">@participant.UserDisplayName</li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p class="card-text">No participants have signed up for this order.</p>
-                }
-                @if (!Order.IsSignedUp)
-                {
-                    <button class="btn btn-primary" @onclick="SignUp">Sign up to order</button>
-                }
-                
-            </div>
-        </div>
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <FluentProgressRing />
     </div>
 }
 else
 {
-    <div class="alert alert-warning" role="alert">
-        Loading order details...
-    </div>
+    <BackToMainPageLinker Link="/Main/tab-1" CustomText="Back to order list" />
+
+    @if (Order != null)
+    {
+        <div class="d-flex justify-content-between" style="margin: 4rem;">
+            <div class="card shadow-sm" style="flex: 0 0 30%; border-radius: 10%; margin-right: 2rem;">
+                <div class="card-body" style="padding: 2rem;">
+                    <h5 class="card-title">Order Information: </h5>
+                    <p class="card-text"><strong>Order Name:</strong> @Order.Name</p>
+                    <p class="card-text"><strong>Min Value:</strong> @Order.MinValue zł</p>
+                    <p class="card-text"><strong>Delivery Cost:</strong> @Order.DeliveryCost zł</p>
+                    <p class="card-text"><strong>Free Delivery From:</strong> @Order.FreeDeliveryFrom zł</p>
+                    <p class="card-text"><strong>Phone Number:</strong> @Order.PhoneNumber</p>
+                    <p class="card-text"><strong>Bank Account Number:</strong> @Order.BankAccountNumber</p>
+                    <p class="card-text"><strong>Creation Date:</strong> @Order.CreationDate.ToString("HH:mm yyyy-MM-dd")</p>
+                    <p class="card-text"><strong>Restaurant Name:</strong> @Order.RestaurantName</p>
+                    <p class="card-text"><strong>Restaurant Type:</strong> @Order.RestaurantType</p>
+                    <p class="card-text"><strong>Author:</strong> @Order.Author</p>
+
+                    @if (Order.Myorder)
+                    {
+                        <button class="btn btn-danger" @onclick="CloseOrder">Close Order</button>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm" style="flex: 0 0 50%; border-radius: 10%; margin-top: 2rem;">
+                <div class="card-body" style="display: flex; flex-direction: column; padding: 2rem;">
+                    <h5 class="card-title">Participants:</h5>
+                    @if (Order.Signups != null && Order.Signups.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var participant in Order.Signups)
+                            {
+                                <li class="list-group-item">@participant.UserDisplayName</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="card-text">No participants have signed up for this order.</p>
+                    }
+
+                    <button class="btn btn-primary" style="margin-top: auto;" @onclick="SignUp">Sign up to order</button>
+                </div>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            Loading order details...
+        </div>
+    }
 }
+
 
 @code {
     [Parameter]
     public Guid id { get; set; }
 
     private OrderInformationDto Order { get; set; } = new OrderInformationDto();
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         Order = await _mediator.Send(new GetOrderInformationQuery(id));
+
+        isLoading = false;
+        
+        StateHasChanged();
     }
 
     private async Task CloseOrder()

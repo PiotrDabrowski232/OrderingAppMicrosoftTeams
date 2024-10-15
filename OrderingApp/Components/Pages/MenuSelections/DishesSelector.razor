@@ -1,6 +1,7 @@
 ﻿@page "/DishesSelector/OrderId/{OrderId:guid}"
 @page "/DishesSelector/SignupId/{SignupId:guid}"
 
+@using OrderingApp.Components.Pages.CustomComponents
 @using OrderingApp.Logic.DTO
 @using OrderingApp.Logic.Functions.Command.OrderItems
 @using OrderingApp.Logic.Functions.Query.Order
@@ -12,48 +13,98 @@
 @inject NavigationManager Navigation
 @inject IToastService ToastService
 
-<h3>DishesSelector</h3>
 
-<div style="margin: 4rem;">
-    @if (!string.IsNullOrEmpty(OrderId.ToString()))
-    {
-            <div style="display: flex; align-items: center;">
-                <FluentSelect Name="Participant" @bind-Value="User" TOption="string" Required Label="Participant">
-                    <FluentOption Value="">Select Participant ...</FluentOption>
-                    @if (IsLoading)
-                    {
-                        <FluentOption>Loading Participants...</FluentOption>
-                    }
-                    else if (CompanyUsers != null && CompanyUsers.Any())
-                    {
-                        foreach (var user in CompanyUsers)
+
+@if (IsLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <FluentProgressRing />
+    </div>
+}
+else
+{
+
+    <h3>Dishes Selector</h3>
+
+    <div style="margin: 4rem;">
+        @if (!string.IsNullOrEmpty(OrderId.ToString()))
+        {
+                <div style="display: flex; align-items: center;">
+                    <FluentSelect Name="Participant" @bind-Value="User" TOption="string" Required Label="Participant">
+                        <FluentOption Value="">Select Participant ...</FluentOption>
+                        @if (IsLoading)
                         {
-                            <FluentOption Value="@user.Key.ToString()">@user.Value</FluentOption>
+                            <FluentOption>Loading Participants...</FluentOption>
                         }
-                    }
-                    else
-                    {
-                        <FluentOption>No users available</FluentOption>
-                    }
-                </FluentSelect>
-            </div>
+                        else if (CompanyUsers != null && CompanyUsers.Any())
+                        {
+                            foreach (var user in CompanyUsers)
+                            {
+                                <FluentOption Value="@user.Key.ToString()">@user.Value</FluentOption>
+                            }
+                        }
+                        else
+                        {
+                            <FluentOption>No users available</FluentOption>
+                        }
+                    </FluentSelect>
+                </div>
 
     
-    }
-    @if (ListChanged && OrderItems.Any())
-    {
-        <div style="text-align: right; margin-top: 1rem;">
-            <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
+        }
+        @if (ListChanged && OrderItems.Any())
+        {
+            <div style="text-align: right; margin-top: 1rem;">
+                <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
+            </div>
+        }
+    </div>
+    @if (OrderItems.Any())
+    {  
+        <div>
+            <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+                <thead>
+                    <tr>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Dish Name</th>
+                        <th scope="col">Calories</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in OrderItems)
+                    {
+                        <tr>
+                            <td>@x.Amount</td>
+                            <td>@x.Dish.Name</td>
+                            <td>@x.Dish.Calories cal</td>
+                            <td>@x.Dish.Price zł</td>
+                            <td>
+                                <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x.Dish)">
+                                    <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                                </button>
+                                <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
+                                    <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    <tr style="border-top: 3px solid black;">
+                        <td colspan="2" style="text-align:end;">Sum: </td>
+                        <td>@SumCalories cal</td>
+                        <td>@Math.Round(SumPrice,2) zł</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     }
-</div>
-@if (OrderItems.Any())
-{  
+
     <div>
         <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
             <thead>
                 <tr>
-                    <th scope="col">Amount</th>
                     <th scope="col">Dish Name</th>
                     <th scope="col">Calories</th>
                     <th scope="col">Price</th>
@@ -61,89 +112,51 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var x in OrderItems)
+                @foreach(var x in Menu.Main)
                 {
                     <tr>
-                        <td>@x.Amount</td>
-                        <td>@x.Dish.Name</td>
-                        <td>@x.Dish.Calories cal</td>
-                        <td>@x.Dish.Price zł</td>
+                        <td>@x.Name</td>
+                        <td>@x.Calories cal</td>
+                        <td>@x.Price zł</td>
                         <td>
-                            <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x.Dish)">
+                            <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
                                 <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
-                            </button>
-                            <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
-                                <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
                             </button>
                         </td>
                     </tr>
                 }
-                <tr style="border-top: 3px solid black;">
-                    <td colspan="2" style="text-align:end;">Sum: </td>
-                    <td>@SumCalories cal</td>
-                    <td>@Math.Round(SumPrice,2) zł</td>
-                    <td></td>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="padding-bottom: 4vh;">
+        <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+            <thead>
+                <tr>
+                    <th scope="col">Dish Name</th>
+                    <th scope="col">Calories</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
                 </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Menu.Extras)
+                {
+                    <tr>
+                        <td>@x.Name</td>
+                        <td>@x.Calories cal</td>
+                        <td>@x.Price zł</td>
+                        <td>
+                            <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
+                                <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 }
-
-<div>
-    <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
-        <thead>
-            <tr>
-                <th scope="col">Dish Name</th>
-                <th scope="col">Calories</th>
-                <th scope="col">Price</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var x in Menu.Main)
-            {
-                <tr>
-                    <td>@x.Name</td>
-                    <td>@x.Calories cal</td>
-                    <td>@x.Price zł</td>
-                    <td>
-                        <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
-                            <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-<div style="padding-bottom: 4vh;">
-    <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
-        <thead>
-            <tr>
-                <th scope="col">Dish Name</th>
-                <th scope="col">Calories</th>
-                <th scope="col">Price</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var x in Menu.Extras)
-            {
-                <tr>
-                    <td>@x.Name</td>
-                    <td>@x.Calories cal</td>
-                    <td>@x.Price zł</td>
-                    <td>
-                        <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
-                            <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
 
 
 @code {
