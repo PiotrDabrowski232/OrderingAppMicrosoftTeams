@@ -1,5 +1,4 @@
 ﻿@page "/DishesSelector/OrderId/{OrderId:guid}"
-@page "/DishesSelector/SignupId/{SignupId:guid}"
 
 @using OrderingApp.Components.Pages.CustomComponents
 @using OrderingApp.Logic.DTO
@@ -9,10 +8,11 @@
 @using OrderingApp.Logic.Functions.Query.User
 @using MediatR
 @using OrderingApp.Shared.Exceptions
+@using OrderingApp.Logic.Services.Interface
 @inject IMediator _mediator
 @inject NavigationManager Navigation
 @inject IToastService ToastService
-
+@inject IValueComputationService _valueComputationService
 
 
 @if (IsLoading)
@@ -163,8 +163,6 @@ else
     [Parameter]
     public Guid OrderId { get; set; }
 
-    [Parameter]
-    public Guid SignupId { get; set; }
 
 
 
@@ -204,7 +202,10 @@ else
                 Dish = dish,
             });
 
-        CalculateSum();
+        _valueComputationService.CalculateCalories(OrderItems, out SumCalories);
+        _valueComputationService.CalculatePrice(OrderItems, out SumPrice);
+
+        ListChanged = true;
 
         StateHasChanged();
     }
@@ -218,16 +219,12 @@ else
         else
             OrderItems.Remove(orderItem);
 
-        CalculateSum();
+        _valueComputationService.CalculateCalories(OrderItems, out SumCalories);
+        _valueComputationService.CalculatePrice(OrderItems, out SumPrice);
+
+        ListChanged = true;
 
         StateHasChanged();
-    }
-
-    private void CalculateSum()
-    {
-        SumCalories = OrderItems.Sum(x => x.Amount * x.Dish.Calories);
-        SumPrice = OrderItems.Sum(x => x.Amount * x.Dish.Price);
-        ListChanged = true;
     }
 
     private async Task SaveChanges()

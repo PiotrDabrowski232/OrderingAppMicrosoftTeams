@@ -1,0 +1,45 @@
+﻿@page "/Update/OrderSignup/{Id:guid}"
+@using OrderingApp.Components.Pages.CustomComponents
+@using OrderingApp.Logic.DTO
+@using OrderingApp.Logic.Functions.Command.OrderItems
+@using OrderingApp.Logic.Functions.Query.Order
+@using OrderingApp.Logic.Functions.Query.OrderSingup
+@using OrderingApp.Logic.Functions.Query.Restaurant
+@using OrderingApp.Logic.Functions.Query.User
+@using MediatR
+@using OrderingApp.Shared.Exceptions
+@inject IMediator _mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+
+@if (isLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <FluentProgressRing />
+    </div>
+}
+else
+{
+    <h4 style="padding: 2rem;">Participant: @Participant.UserDisplayName</h4>
+
+}
+@code {
+    [Parameter]
+    public Guid Id {get;set;}
+
+    private bool isLoading = true;
+    private OrderSignupsDto Participant = new();
+    private IEnumerable<OrderItemsDto> OrderItems = new List<OrderItemsDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var signupDetails = await _mediator.Send(new GetSignupDetailsQuery(Id));
+
+        Participant = signupDetails.Item1;
+        OrderItems = signupDetails.Item2;
+
+        isLoading = false;
+
+        StateHasChanged();
+    }
+}

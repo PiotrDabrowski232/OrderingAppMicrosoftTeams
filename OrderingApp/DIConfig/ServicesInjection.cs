@@ -21,6 +21,8 @@ namespace OrderingApp.DIConfig
 
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IValueComputationService, ValueComputationService>();
+
 
             return services;
         }

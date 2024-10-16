@@ -52,7 +52,11 @@ else
                         <ul class="list-group">
                             @foreach (var participant in Order.Signups)
                             {
-                                <li class="list-group-item">@participant.UserDisplayName</li>
+                                <li class="list-group-item" style="padding:0.25rem;">
+                                    <a href="/Update/OrderSignup/@participant.Id" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                            @participant.UserDisplayName
+                                        </a>
+                                </li>
                             }
                         </ul>
                     }
