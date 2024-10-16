@@ -84,7 +84,7 @@ else
     [Parameter]
     public Guid id { get; set; }
 
-    private OrderInformationDto Order { get; set; } = new OrderInformationDto();
+    private OrderInformationDto Order { get; set; } = new();
     private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()

@@ -8,5 +8,6 @@
         public float Price { get; set; }
         public int Calories { get; set; }
         public bool IsExtras { get; set; }
+        public bool Blocked { get; set; }
     }
 }

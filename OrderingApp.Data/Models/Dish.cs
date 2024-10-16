@@ -8,6 +8,7 @@
         public float Price { get; set; }
         public int Calories { get; set; }
         public bool IsExtras { get; set; }
+        public bool Blocked { get; set; }
         public Guid RestaurantId { get; set; }
         public virtual Restaurant Restaurant { get; set; }  
         public virtual ICollection<OrderItems> OrderItems { get; set; }
