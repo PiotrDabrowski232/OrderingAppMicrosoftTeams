@@ -26,7 +26,7 @@ else
 
     <div style="display: flex; justify-content: flex-end; margin-top: 1rem; margin-right: 8vw; margin-bottom: 1rem;">
         <div class="btn-group" role="group">
-            @if (ListChanged && OrderItems.Any() && Order.MinValue <= SumPrice)
+            @if (ListChanged && OrderItems.Any() && Order.MinValue <= SumPrice && !OrderItems.Any(x => x.Dish.Blocked))
             {
                 <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
             }
@@ -52,20 +52,46 @@ else
                 <tbody>
                     @foreach (var x in OrderItems)
                     {
-                        <tr>
-                            <td>@x.Amount</td>
-                            <td>@x.Dish.Name</td>
-                            <td>@x.Dish.Calories cal</td>
-                            <td>@x.Dish.Price zł</td>
-                            <td>
-                                <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x.Dish)">
-                                    <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
-                                </button>
-                                <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
-                                    <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        @if(!x.Dish.Blocked)
+                        {
+
+                            <tr>
+                                <td>@x.Amount</td>
+                                <td>@x.Dish.Name</td>
+                                <td>@x.Dish.Calories cal</td>
+                                <td>@x.Dish.Price zł</td>
+                                <td>
+                                    <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x.Dish)">
+                                        <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                                    </button>
+                                    <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
+                                        <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <FluentTooltip Anchor="@($"{x.Dish.Id + x.Dish.Name}")" Position=TooltipPosition.Bottom>
+                                <strong>
+                                    Remove Blocked Dish
+                                </strong>
+                            </FluentTooltip>
+                            <tr>
+                                <td class="table-danger">
+                                    @x.Amount
+                                    <i Id="@($"{x.Dish.Id + x.Dish.Name}")"  class="bi bi-info-circle-fill"></i>
+                                </td>
+                                <td class="table-danger">@x.Dish.Name</td>
+                                <td class="table-danger">@x.Dish.Calories cal</td>
+                                <td class="table-danger">@x.Dish.Price zł</td>
+                                <td class="table-danger">
+                                    <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
+                                        <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
                     }
                     <tr style="border-top: 3px solid black;">
                         <td colspan="2" style="text-align:end;">Order Value: </td>
@@ -266,7 +292,7 @@ else
         {
             FreeDelivery = false;
         }
-    }
+    } 
 
     private float DeliveryPrice()
     {

@@ -18,7 +18,7 @@ namespace OrderingApp.Logic.Functions.Query.Restaurant
         public override async Task<MenuDto> Handle(GetRestaurantDishesExtrasQuery request, CancellationToken cancellationToken)
         {
             var mainDishes = await _dbContext.Dishes
-                .Where(x => x.RestaurantId == request.Id && !x.IsExtras)
+                .Where(x => x.RestaurantId == request.Id && !x.IsExtras && !x.Blocked)
                 .Select(x => new DishDto
                 {
                     Id = x.Id,
@@ -31,7 +31,7 @@ namespace OrderingApp.Logic.Functions.Query.Restaurant
                 .ToListAsync(cancellationToken);
 
             var extrasDishes = await _dbContext.Dishes
-                .Where(x => x.RestaurantId == request.Id && x.IsExtras)
+                .Where(x => x.RestaurantId == request.Id && x.IsExtras && !x.Blocked)
                 .Select(x => new DishDto
                 {
                     Id = x.Id,
