@@ -9,11 +9,7 @@
 }
 else
 {
-    <p style="padding-left:1vw;">
-        <a href="/Orderdetails/@Order.Id" class="link-Primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
-            <i class="bi bi-arrow-left" style="font-size:20px;"></i>  Back To Order Details
-        </a>
-    </p>
+    <BackToMainPageLinker Color="Primary" Link="@($"/Orderdetails/{Order.Id.ToString()}")" CustomText="Back to order details" />
 
     <h4 style="padding-left: 2rem;">Participant: @Participant.UserDisplayName</h4>
 
