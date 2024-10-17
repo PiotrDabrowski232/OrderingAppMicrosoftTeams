@@ -9,7 +9,13 @@
 }
 else
 {
-    <h4 style="padding: 2rem;">Participant: @Participant.UserDisplayName</h4>
+    <p style="padding-left:1vw;">
+        <a href="/Orderdetails/@Order.Id" class="link-Primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+            <i class="bi bi-arrow-left" style="font-size:20px;"></i>  Back To Order Details
+        </a>
+    </p>
+
+    <h4 style="padding-left: 2rem;">Participant: @Participant.UserDisplayName</h4>
 
     <div style="display: flex; justify-content: flex-end; margin-top: 1rem; margin-right: 8vw; margin-bottom: 1rem;">
         <div class="btn-group" role="group">
@@ -289,13 +295,31 @@ else
             return Order.DeliveryCost / Order.OrderSignupCount;
     }
 
-    private void SaveChanges()
+    private async void SaveChanges()
     {
-        
+        try
+        {
+            await _mediator.Send(new UpdateOrderItemsCommand(Id, OrderItems));
+            ToastService.ShowSuccess("Order List Updated Successfully");
+        }
+        catch
+        {
+            ToastService.ShowError("Some problems occured");
+        }
     }
 
-    private void DeleteSignup()
+    private async void DeleteSignup()
     {
-        
+        try
+        {
+            await _mediator.Send(new RemoveSignupCommand(Id));
+            ToastService.ShowSuccess("Signup deleted correctly");
+            await Task.Delay(3000);
+            Navigation.NavigateTo($"/Orderdetails/{Order.Id}");
+        }
+        catch
+        {
+            ToastService.ShowError("Some problems occured");
+        }
     }
 }
