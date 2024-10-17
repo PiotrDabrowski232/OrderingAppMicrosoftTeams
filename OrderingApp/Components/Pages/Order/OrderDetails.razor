@@ -13,7 +13,7 @@ else
 
     @if (Order != null)
     {
-        <div class="d-flex justify-content-between" style="margin: 4rem;">
+        <div class="d-flex justify-content-between" style="margin: 2rem;">
             <div class="card shadow-sm" style="flex: 0 0 30%; border-radius: 10%; margin-right: 2rem;">
                 <div class="card-body" style="padding: 2rem;">
                     <h5 class="card-title">Order Information: </h5>
@@ -35,7 +35,7 @@ else
                 </div>
             </div>
 
-            <div class="card shadow-sm" style="flex: 0 0 50%; border-radius: 10%; margin-top: 2rem;">
+            <div class="card shadow-sm" style="flex: 0 0 45%; border-radius: 5%; margin-top: 2rem; margin-right:8%;">
                 <div class="card-body" style="display: flex; flex-direction: column; padding: 2rem;">
                     <h5 class="card-title">Participants:</h5>
                     @if (Order.Signups != null && Order.Signups.Any())
@@ -55,11 +55,69 @@ else
                     {
                         <p class="card-text">No participants have signed up for this order.</p>
                     }
-
-                    <button class="btn btn-primary" style="margin-top: auto;" @onclick="SignUp">Sign up to order</button>
+                    <div style="margin-top: auto;">
+                        <div class="p-3 mb-2 bg-success text-white" style="width:fit-content;">You have @Order.Signups.Count() orders</div>
+                        <button class="btn btn-primary" style="width: 100%;" @onclick="SignUp">Sign up to order</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
+        <div style="margin-left: 65%; display: ruby;">
+            @if (Total < Order.FreeDeliveryFrom)
+            {
+            <div class="card shadow-sm" style="border-radius: 5%; margin-top: 0.2rem; width: fit-content; padding-top:0; ">
+                    <div class="card-body" style="display: flex; flex-direction: column;">
+                        <h6 class="card-title">To get free delivery remains: @Math.Round(Order.FreeDeliveryFrom-Total, 2) zł</h6>
+                    </div>
+                </div>
+            }
+            <div class="card shadow-sm" style="border-radius: 5%; margin-top: 0.2rem; width: fit-content; padding-top:0; margin-left:6vw; ">
+                <div class="card-body" style="display: flex; flex-direction: column;">
+                    <h6 class="card-title">Cost Summary:</h6>
+                    @if(Order.Signups.Count() == 0)
+                    {
+                        <p>This order does not yet have the signups</p>
+                    }
+                    else
+                    {
+                        <table class="table" style="width:fit-content;">
+                            <tbody>
+                                <tr>
+                                    <td style="border:0px; padding-top: 0px; width:fit-content;">Order Value: </td>
+                                    <td style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px;">@Math.Round(Total,2) zł</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:0px; padding-top: 0px;">Delivery:</td>
+                                    @if (Total >= Order.FreeDeliveryFrom)
+                                    {
+                                        <td style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px;">Free Delivery</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px;">@Math.Round(Order.DeliveryCost,2) zł</td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align:right; padding:0px; padding-top: 0px;">
+                                        <i class="bi bi-plus"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    @if (Total >= Order.FreeDeliveryFrom)
+                                    {
+                                        <td colspan="2" style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px; padding-bottom: 0px; color:green;">@Math.Round(Total, 2) zł</td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="2" style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px; padding-bottom: 0px; color:green;">@Math.Round(Total + Order.DeliveryCost, 2) zł</td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
         </div>
     }
     else
@@ -77,10 +135,13 @@ else
 
     private OrderInformationDto Order { get; set; } = new();
     private bool isLoading = true;
+    private float Total;
 
     protected override async Task OnInitializedAsync()
     {
         Order = await _mediator.Send(new GetOrderInformationQuery(id));
+
+        Total = _valueComputationService.CalculateTotalOrderprice(id);
 
         isLoading = false;
         
