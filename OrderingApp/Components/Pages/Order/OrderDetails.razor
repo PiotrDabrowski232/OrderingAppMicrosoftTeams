@@ -1,13 +1,4 @@
 ﻿@page "/Orderdetails/{id:guid}"
-@using OrderingApp.Components.Pages.CustomComponents
-@using OrderingApp.Logic.DTO
-@using OrderingApp.Logic.Functions.Query.Order
-@using OrderingApp.Logic.Functions.Command.OrderCommands
-@using MediatR
-@inject IMediator _mediator
-@inject IToastService ToastService
-@inject NavigationManager Navigation
-
 
 
 @if (isLoading)

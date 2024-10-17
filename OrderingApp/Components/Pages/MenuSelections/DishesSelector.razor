@@ -1,20 +1,5 @@
 ﻿@page "/DishesSelector/OrderId/{OrderId:guid}"
 
-@using OrderingApp.Components.Pages.CustomComponents
-@using OrderingApp.Logic.DTO
-@using OrderingApp.Logic.Functions.Command.OrderItems
-@using OrderingApp.Logic.Functions.Query.Order
-@using OrderingApp.Logic.Functions.Query.Restaurant
-@using OrderingApp.Logic.Functions.Query.User
-@using MediatR
-@using OrderingApp.Shared.Exceptions
-@using OrderingApp.Logic.Services.Interface
-@inject IMediator _mediator
-@inject NavigationManager Navigation
-@inject IToastService ToastService
-@inject IValueComputationService _valueComputationService
-
-
 @if (IsLoading)
 {
     <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">

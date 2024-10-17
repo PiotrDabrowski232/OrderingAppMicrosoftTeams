@@ -12,3 +12,26 @@
 @using Microsoft.Fast.Components.FluentUI;
 @using Microsoft.TeamsFx
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using OrderingApp.Components.Pages.CustomComponents
+@using OrderingApp.Logic.DTO
+
+@using MediatR
+
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+
+@using OrderingApp.Logic.Functions.Command.OrderCommands
+@using OrderingApp.Logic.Functions.Command.OrderItems
+
+@using OrderingApp.Logic.Functions.Query.Order
+@using OrderingApp.Logic.Functions.Query.Restaurant
+@using OrderingApp.Logic.Functions.Query.User
+@using OrderingApp.Logic.Functions.Query.OrderSingup
+
+@using OrderingApp.Logic.Services.Interface
+
+@using OrderingApp.Shared.Exceptions
+
+@inject IMediator _mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+@inject IValueComputationService _valueComputationService

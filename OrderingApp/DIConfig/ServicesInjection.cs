@@ -1,8 +1,7 @@
-﻿using System.Reflection;
-using AutoMapper;
-using Microsoft.Fast.Components.FluentUI.Components.Tooltip;
+﻿using Microsoft.Fast.Components.FluentUI.Components.Tooltip;
 using OrderingApp.Logic.Services;
 using OrderingApp.Logic.Services.Interface;
+using System.Reflection;
 
 namespace OrderingApp.DIConfig
 {

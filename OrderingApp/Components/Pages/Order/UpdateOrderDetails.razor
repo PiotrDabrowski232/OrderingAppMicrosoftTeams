@@ -1,13 +1,4 @@
 ﻿@page "/UpdateOrderDetails/{id:guid}"
-@using OrderingApp.Logic.DTO
-@using MediatR
-@using OrderingApp.Logic.Functions.Command.OrderCommands
-@using OrderingApp.Logic.Functions.Query.Order
-@using OrderingApp.Logic.Functions.Query.Restaurant
-@using OrderingApp.Components.Pages.CustomComponents
-@inject IMediator _mediator
-@inject IToastService ToastService
-@inject NavigationManager Navigation
 
 <BackToMainPageLinker Link="/Main/tab-1" CustomText="Back to order list" />
 
