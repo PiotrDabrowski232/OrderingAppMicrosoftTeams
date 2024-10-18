@@ -13,7 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderingApp.Data", "Orderin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderingApp.Shared", "OrderingApp.Shared\OrderingApp.Shared.csproj", "{9B2F7488-26A4-4633-A7A6-D8424A9ADD24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderingApp.Restaurant.Api", "OrderingApp.Restaurant.Api\OrderingApp.Restaurant.Api.csproj", "{414C3BB6-3B3A-4F62-98FC-54F6C2B6802C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderingApp.Restaurant.Api", "OrderingApp.Restaurant.Api\OrderingApp.Restaurant.Api.csproj", "{414C3BB6-3B3A-4F62-98FC-54F6C2B6802C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderingApp.Restaurant.Logic", "OrderingApp.Restaurant.Logic\OrderingApp.Restaurant.Logic.csproj", "{6AC6B693-1BD5-44BE-B64D-A1B5AEA0CEAD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RestaurantApi", "RestaurantApi", "{301A19B8-7EAD-4998-A4A3-23CAEE260A4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,9 +49,17 @@ Global
 		{414C3BB6-3B3A-4F62-98FC-54F6C2B6802C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{414C3BB6-3B3A-4F62-98FC-54F6C2B6802C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{414C3BB6-3B3A-4F62-98FC-54F6C2B6802C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC6B693-1BD5-44BE-B64D-A1B5AEA0CEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC6B693-1BD5-44BE-B64D-A1B5AEA0CEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC6B693-1BD5-44BE-B64D-A1B5AEA0CEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC6B693-1BD5-44BE-B64D-A1B5AEA0CEAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{414C3BB6-3B3A-4F62-98FC-54F6C2B6802C} = {301A19B8-7EAD-4998-A4A3-23CAEE260A4B}
+		{6AC6B693-1BD5-44BE-B64D-A1B5AEA0CEAD} = {301A19B8-7EAD-4998-A4A3-23CAEE260A4B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {468997B1-65DE-43C5-89AD-6E373AC5EED7}
