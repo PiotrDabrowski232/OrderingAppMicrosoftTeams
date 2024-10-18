@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using OrderingApp.Data.DBConfig;
 using OrderingApp.Logic.DTO;
 using OrderingApp.Logic.Services.Interface;

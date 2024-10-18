@@ -27,4 +27,8 @@
     <ProjectReference Include="..\OrderingApp.Shared\OrderingApp.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DBConfig\" />
+  </ItemGroup>
+
 </Project>

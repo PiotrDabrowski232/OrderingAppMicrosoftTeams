@@ -87,5 +87,12 @@ else{
     }
 
     private void RouteToOrderDetails(Guid orderId) => Navigation.NavigateTo($"/Orderdetails/{orderId}");
-    private void RouteToUpdateOrder(Guid orderId) => Navigation.NavigateTo($"/UpdateOrderDetails/{orderId}");
+
+    private async void RouteToUpdateOrder(Guid orderId)
+    {
+        if (await _mediator.Send(new OrderSignupsQuery(orderId)))
+            ToastService.ShowError("Users are assigned to your order");
+        else
+            Navigation.NavigateTo($"/UpdateOrderDetails/{orderId}");
+    }
 }

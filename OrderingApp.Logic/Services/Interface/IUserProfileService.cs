@@ -1,4 +1,5 @@
 ﻿using Microsoft.Graph.Models;
+using OrderingApp.Logic.DTO;
 
 namespace OrderingApp.Logic.Services.Interface
 {
@@ -8,5 +9,7 @@ namespace OrderingApp.Logic.Services.Interface
         public Task<Guid> GetUserProfileIdAsync();
         public Task<string> GetUserProfileNameAsync();
         public Task<List<User>> GetAllUsersAsync();
+        public Task SendMessage(CommentDto comment);
+
     }
 }
