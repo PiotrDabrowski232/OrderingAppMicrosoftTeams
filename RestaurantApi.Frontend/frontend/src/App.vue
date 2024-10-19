@@ -1,16 +1,15 @@
 <template>
-  <div>
-    <RestaurantsList/>
-  </div>
+  <img alt="Vue logo" src="./assets/logo.png">
+  <RestaurantList/>
 </template>
 
 <script>
-import RestaurantsList from './components/RestaurantsList.vue';
+
 
 export default {
   name: 'App',
   components: {
-    RestaurantsList
+    RestaurantList
   }
 }
 </script>

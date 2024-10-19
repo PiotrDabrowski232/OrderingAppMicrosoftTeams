@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OrderingApp.Data.DBConfig;
-using System.Reflection;
+using OrderingApp.Restaurant.Api.DIConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +12,19 @@ var connectionString = builder.Configuration.GetConnectionString("Connection");
 
 builder.Services.AddDbContext<OrderingDbContext>(options =>
     options.UseSqlServer(connectionString));
-var assemblies = Assembly.Load("OrderingApp.Logic");
 
+builder.Services.WithServices();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
 
 var app = builder.Build();
 

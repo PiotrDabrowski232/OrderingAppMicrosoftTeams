@@ -7,4 +7,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrderingApp.Data\OrderingApp.Data.csproj" />
+    <ProjectReference Include="..\OrderingApp.Shared\OrderingApp.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

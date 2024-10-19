@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using OrderingApp.Logic.Functions.Query.Restaurant;
+using OrderingApp.Restaurant.Logic.Functions.Query;
 
 namespace OrderingApp.Restaurant.Api.Controllers
 {
@@ -20,7 +20,23 @@ namespace OrderingApp.Restaurant.Api.Controllers
         {
             try
             {
-                var result = _mediator.Send(new GetRestaurantsQuery());
+                var result = await _mediator.Send(new GetAllRestaurantQuery());
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/Restaurant")]
+        public async Task<IActionResult> AddRestaurants([FromQuery] string id)
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetRestaurantQuery(id));
                 return Ok(result);
 
             }
