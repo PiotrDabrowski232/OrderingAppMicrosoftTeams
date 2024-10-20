@@ -1,17 +1,13 @@
 <template>
   <div>
-    <RestaurantsList/>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import RestaurantsList from './components/RestaurantsList.vue';
 
 export default {
   name: 'App',
-  components: {
-    RestaurantsList
-  }
 }
 </script>
 

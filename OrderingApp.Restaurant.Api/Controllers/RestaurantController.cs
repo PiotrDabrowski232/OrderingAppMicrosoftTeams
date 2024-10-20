@@ -1,5 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OrderingApp.Restaurant.Logic.DTO;
+using OrderingApp.Restaurant.Logic.Functions.Command;
 using OrderingApp.Restaurant.Logic.Functions.Query;
 
 namespace OrderingApp.Restaurant.Api.Controllers
@@ -32,11 +34,43 @@ namespace OrderingApp.Restaurant.Api.Controllers
 
         [HttpGet]
         [Route("/Restaurant")]
-        public async Task<IActionResult> AddRestaurants([FromQuery] string id)
+        public async Task<IActionResult> GetRestaurant([FromQuery] string id)
         {
             try
             {
                 var result = await _mediator.Send(new GetRestaurantQuery(id));
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/RestaurantTypes")]
+        public async Task<IActionResult> GetTypes()
+        {
+            try
+            {
+                var result = await _mediator.Send(new GetRestaurantTypesQuery());
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("/AddRestaurant")]
+        public async Task<IActionResult> CreateRestaurant([FromBody] RestaurantDto restaurant)
+        {
+            try
+            {
+                var result = await _mediator.Send(new AddNewRestaurantCommand(restaurant));
                 return Ok(result);
 
             }

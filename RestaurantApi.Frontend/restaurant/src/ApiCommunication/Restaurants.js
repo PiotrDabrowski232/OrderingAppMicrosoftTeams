@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const baseURL = "https://localhost:7021"
+
 const apiClient = axios.create({
   baseURL: 'https://example.com/api', 
-  timeout: 5000,  
+  timeout: 10000,  
   headers: {
     'Content-Type': 'application/json',  
   }
@@ -10,7 +12,7 @@ const apiClient = axios.create({
 
 export const getData = async (endpoint) => {
   try {
-    const response = await apiClient.get(endpoint);
+    const response = await apiClient.get(baseURL+endpoint);
     return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -20,7 +22,17 @@ export const getData = async (endpoint) => {
 
 export const postData = async (endpoint, data) => {
   try {
-    const response = await apiClient.post(endpoint, data);
+    const response = await apiClient.post(baseURL+endpoint, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error posting data:', error);
+    throw error; 
+  }
+};
+
+export const updateData = async (endpoint) => {
+  try {
+    const response = await apiClient.put(baseURL+endpoint);
     return response.data;
   } catch (error) {
     console.error('Error posting data:', error);
