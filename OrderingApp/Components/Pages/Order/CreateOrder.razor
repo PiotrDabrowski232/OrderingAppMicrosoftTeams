@@ -106,6 +106,10 @@
             ShowSuccessToast();
 
             Order = new OrderDto();
+
+            await Task.Delay(2000);
+
+            Navigation.NavigateTo("/Main/tab-1");
         }
         catch (Exception ex)
         {

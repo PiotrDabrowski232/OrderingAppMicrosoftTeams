@@ -103,17 +103,17 @@ else
                     <p class="card-text"><strong>Restaurant Type:</strong> @Order.RestaurantType</p>
                     <p class="card-text"><strong>Author:</strong> @Order.Author</p>
 
-                    @if (Order.Myorder)
+                    @if (Order.Myorder && Order.IsActive)
                     {
                         <button class="btn btn-danger" style="margin-right: 0.5vw;" @onclick="CloseOrder">Close Order</button>
-                        
-                        if(Order.Signups.Any())
+                    }
+
+                    @if (Order.Signups.Any() && Order.Myorder)
                         {
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                                 Ordered dishes
                             </button>
                         }
-                    }
                 </div>
             </div>
 
@@ -122,6 +122,8 @@ else
                     <h5 class="card-title">Participants:</h5>
                     @if (Order.Signups != null && Order.Signups.Any())
                     {
+                        if (Order.IsActive)
+                        {
                         <ul class="list-group">
                             @foreach (var participant in Order.Signups)
                             {
@@ -137,15 +139,30 @@ else
                                     }
                                 </li>
                             }
-                        </ul>
+                            </ul>
+                        }
+                        else
+                        {
+                            <ul class="list-group">
+                                @foreach (var participant in Order.Signups)
+                                {
+                                    <li class="list-group-item" style="padding:0.25rem;">
+                                        <p class="text-secondary">@participant.UserDisplayName</p>
+                                    </li>
+                                }
+                            </ul>
+                        }
                     }
                     else
                     {
                         <p class="card-text">No participants have signed up for this order.</p>
                     }
-                    <div style="margin-top: auto;">
+                        <div style="margin-top: auto;">
                         <div class="p-3 mb-2 bg-success text-white" style="width:fit-content;">You have @Order.Signups.Count() orders</div>
-                        <button class="btn btn-primary" style="width: 100%;" @onclick="SignUp">Sign up to order</button>
+                        @if (Order.IsActive)
+                        {
+                            <button class="btn btn-primary" style="width: 100%;" @onclick="SignUp">Sign up to order</button>
+                        }
                     </div>
                 </div>
             </div>

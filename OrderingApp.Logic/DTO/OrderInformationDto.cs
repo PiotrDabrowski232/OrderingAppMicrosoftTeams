@@ -17,6 +17,7 @@ namespace OrderingApp.Logic.DTO
         public string Author { get; set; }
         public bool Myorder { get; set; }
         public bool IsSignedUp { get; set; }
+        public bool IsActive { get; set; }
 
         public IEnumerable<OrderSignupsDto>? Signups { get; set; }
     }

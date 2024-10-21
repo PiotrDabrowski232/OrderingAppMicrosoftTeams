@@ -26,6 +26,18 @@
                 }
             </Content>
         </FluentTab>
+        <FluentTab Id="tab-5" @onclick="@(() => OnTabChanged("tab-5"))">
+            <Header>
+                My Archived Orders
+            </Header>
+            <Content>
+                @if (activeTabId == "tab-5")
+
+                {
+                    <ArchivedOrders />
+                }
+            </Content>
+        </FluentTab>
     </FluentTabs>
 </div>
 
@@ -35,13 +47,9 @@
 
 
     private void OnTabChanged(string tabId)
-
     {
-
         if (!string.IsNullOrEmpty(tabId))
-
         {
-
             activeTabId = tabId;
 
             StateHasChanged();
