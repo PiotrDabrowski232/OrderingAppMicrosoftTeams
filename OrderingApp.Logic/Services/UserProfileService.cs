@@ -78,7 +78,7 @@ namespace OrderingApp.Logic.Services
                 var users = await graphClient.Users
                     .GetAsync(requestConfiguration =>
                     {
-                        requestConfiguration.QueryParameters.Select = new[] { "id", "displayName", "userPrincipalName" };
+                        requestConfiguration.QueryParameters.Select = new[] { "id", "displayName"};
                     });
 
                 return users.Value;
@@ -86,7 +86,7 @@ namespace OrderingApp.Logic.Services
             }
             catch (ServiceException ex)
             {
-                throw new ApplicationException($"Błąd przy pobieraniu użytkowników: {ex.Message}", ex);
+                throw new ApplicationException(ex.Message);
             }
         }
 

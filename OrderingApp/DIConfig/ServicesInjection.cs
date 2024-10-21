@@ -1,5 +1,4 @@
 ﻿using Microsoft.Fast.Components.FluentUI.Components.Tooltip;
-using OrderingApp.Logic.BackgroundJobs;
 using OrderingApp.Logic.Services;
 using OrderingApp.Logic.Services.Interface;
 using System.Reflection;
@@ -22,7 +21,6 @@ namespace OrderingApp.DIConfig
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUserProfileService, UserProfileService>();
             services.AddScoped<IValueComputationService, ValueComputationService>();
-            services.AddHostedService<BlockedDishesInformer>();
 
 
             return services;
