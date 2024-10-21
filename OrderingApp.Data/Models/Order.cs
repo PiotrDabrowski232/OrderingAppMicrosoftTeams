@@ -8,11 +8,10 @@
         public float DeliveryCost { get; set; }
         public float FreeDeliveryFrom { get; set; }
         public int PhoneNumber { get; set; }
-        public long BankAccountNumber { get; set; }
+        public decimal BankAccountNumber { get; set; }
         public DateTime CreationDate { get; set; }
         public Guid CreatedBy { get; set; }
         public bool IsActive { get; set; }
-        public bool Notifications { get; set; }
 
         public Guid RestaurantId { get; set; }
         public virtual Restaurant Restaurant { get; set; }

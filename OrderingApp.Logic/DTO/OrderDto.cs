@@ -27,9 +27,8 @@ namespace OrderingApp.Logic.DTO
         public int PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Bank account number is required.")]
-        [RegularExpression(@"^\d{10,15}$", ErrorMessage = "Bank account number must be between 10 and 15 digits.")]
-        public long BankAccountNumber { get; set; }
-        public bool Notifications { get; set; }
+        [RegularExpression(@"^\d{26}$", ErrorMessage = "Bank account number must have 26 digits.")]
+        public string BankAccountNumber { get; set; }
         public Guid CreatedBy { get; set; }
 
     }

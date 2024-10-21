@@ -60,11 +60,10 @@ namespace OrderingApp.Data.Migrations
                     DeliveryCost = table.Column<float>(type: "real", nullable: false),
                     FreeDeliveryFrom = table.Column<float>(type: "real", nullable: false),
                     PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    BankAccountNumber = table.Column<long>(type: "bigint", nullable: false),
+                    BankAccountNumber = table.Column<decimal>(type: "decimal(26,0)", precision: 26, scale: 0, nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    Notifications = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>

@@ -10,11 +10,13 @@ namespace OrderingApp.Logic.Mapper
         public OrderMapper()
         {
             CreateMap<Order, OrderDto>()
-                .ForMember(dest => dest.RestaurantId, opt => opt.MapFrom(src => src.RestaurantId.ToString()));
+                .ForMember(dest => dest.RestaurantId, opt => opt.MapFrom(src => src.RestaurantId.ToString()))
+                .ForMember(dest => dest.BankAccountNumber, opt => opt.MapFrom(src => src.BankAccountNumber.ToString()));
 
             CreateMap<OrderDto, Order>()
                 .ForMember(dest => dest.RestaurantId, opt => opt.MapFrom(src => Guid.Parse(src.RestaurantId)))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true));
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.BankAccountNumber, opt => opt.MapFrom(src => Decimal.Parse(src.BankAccountNumber)));
 
 
             CreateMap<Order, OrderDetailsDto>()

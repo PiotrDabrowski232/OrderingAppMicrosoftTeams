@@ -55,15 +55,8 @@
             </div>
 
             <div>
-                <FluentNumberField Name="BankAccountNumber" @bind-Value="Order.BankAccountNumber" Label="Bank Account Number" Required />
+                <FluentTextField Name="BankAccountNumber" @bind-Value="Order.BankAccountNumber" Label="Bank Account Number" Required Style="width:14vw;" />
                 <ValidationMessage For="@(() => Order.BankAccountNumber)" />
-            </div>
-
-            <div>
-                <FluentSwitch @bind-Value="Order.Notifications" Label="Notifications about order activity">
-                    <span slot="checked-message">On</span>
-                    <span slot="unchecked-message">Off</span>
-                </FluentSwitch>
             </div>
 
             <div>

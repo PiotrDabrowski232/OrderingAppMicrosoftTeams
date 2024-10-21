@@ -12,7 +12,7 @@ using OrderingApp.Data.DBConfig;
 namespace OrderingApp.Data.Migrations
 {
     [DbContext(typeof(OrderingDbContext))]
-    [Migration("20241018091148_init")]
+    [Migration("20241021142850_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -344,8 +344,9 @@ namespace OrderingApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("BankAccountNumber")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("BankAccountNumber")
+                        .HasPrecision(26)
+                        .HasColumnType("decimal(26, 0)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -372,11 +373,6 @@ namespace OrderingApp.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Notifications")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.Property<int>("PhoneNumber")
                         .HasColumnType("int");

@@ -10,7 +10,7 @@ namespace OrderingApp.Logic.DTO
         public float DeliveryCost { get; set; }
         public float FreeDeliveryFrom { get; set; }
         public int PhoneNumber { get; set; }
-        public long BankAccountNumber { get; set; }
+        public decimal BankAccountNumber { get; set; }
         public DateTime CreationDate { get; set; }
         public string RestaurantName { get; set; }
         public RestauranType RestaurantType { get; set; }

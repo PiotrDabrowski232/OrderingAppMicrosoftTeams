@@ -58,7 +58,6 @@ namespace OrderingApp.Logic.Functions.Command.OrderCommands
                     existOrder.FreeDeliveryFrom = order.FreeDeliveryFrom;
                     existOrder.PhoneNumber = order.PhoneNumber;
                     existOrder.BankAccountNumber = order.BankAccountNumber;
-                    existOrder.Notifications = order.Notifications;
 
                     await _dbContext.SaveChangesAsync();
 

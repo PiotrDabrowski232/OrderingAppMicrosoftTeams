@@ -13,15 +13,17 @@ namespace OrderingApp.Data.ModelsConfig
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);
 
-            builder.Property(x => x.Notifications)
-               .HasDefaultValue(true);
-
             builder.Property(x => x.CreationDate)
                 .HasDefaultValueSql("GETDATE()");
 
             builder.HasMany(x => x.OrderSignups)
                 .WithOne(x => x.Order)
                 .HasForeignKey(x => x.OrderId);
+
+            builder.Property(x => x.BankAccountNumber)
+                .IsRequired()
+                .HasColumnType("decimal(26, 0)") 
+                .HasPrecision(26, 0); 
         }
     }
 }

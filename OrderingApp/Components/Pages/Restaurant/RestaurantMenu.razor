@@ -9,7 +9,7 @@
 
     <FluentDataGrid Items="@Main">
         <PropertyColumn Title="Name" Property="@(p => p.Name)" Sortable="true" />
-        <PropertyColumn Title="Description" Property="@(p => p.Description)" Sortable="true" />
+        <PropertyColumn Title="Description" Property="@(p => p.Description)" Sortable="true" Style="word-wrap: break-word; white-space: normal; overflow: visible;" />
         <PropertyColumn Title="Calories" Property="@(p => p.Calories + " cal")" Sortable="true" />
         <PropertyColumn Title="Price" Property="@(p => p.Price + "zł")" Sortable="true" />
     </FluentDataGrid>
@@ -18,7 +18,7 @@
 
     <FluentDataGrid Items="@Extras">
         <PropertyColumn Title="Name" Property="@(p => p.Name)" Sortable="true" />
-        <PropertyColumn Title="Description" Property="@(p => p.Description)" Sortable="true"/>
+        <PropertyColumn Title="Description" Property="@(p => p.Description)" Sortable="true" Style="word-wrap: break-word; white-space: normal; overflow: visible;"/>
         <PropertyColumn Title="Calories" Property="@(p => p.Calories + " cal")" Sortable="true" />
         <PropertyColumn Title="Price" Property="@(p => p.Price + " zł")" Sortable="true" />
     </FluentDataGrid>
