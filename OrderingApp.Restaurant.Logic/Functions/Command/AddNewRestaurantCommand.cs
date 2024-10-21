@@ -28,7 +28,7 @@ namespace OrderingApp.Restaurant.Logic.Functions.Command
 
             _dbContext.Restaurants.Add(restaurant);
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return restaurant.Id;
         }

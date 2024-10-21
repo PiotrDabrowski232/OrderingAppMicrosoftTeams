@@ -1,6 +1,7 @@
 <template>
     <div class="container">
-        <h2>Dodaj Nową Restaurację</h2>
+        <p style="text-align: left; margin-left: 4vw;"><a href="/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Back to Restaurant List</a></p>
+        <h2>Add Restaurant</h2>
         <form @submit.prevent="handleSubmit">
             <div class="mb-3">
                 <label for="restaurantName" class="form-label">Nazwa</label>
@@ -23,12 +24,12 @@
                     :class="{ 'is-invalid': typeError }" 
                     required
                 >
-                    <option value="">Wybierz typ</option>
+                    <option value="">Select Type</option>
                     <option v-for="type in Types" :key="type" :value="type">{{ type }}</option>
                 </select>
                 <div v-if="typeError" class="invalid-feedback">{{ typeError }}</div>
             </div>
-            <button type="submit" class="btn btn-primary">Dodaj Restaurację</button>
+            <button type="submit" class="btn btn-primary">Add</button>
             <div v-if="apiError" class="alert alert-danger mt-3">{{ apiError }}</div>
         </form>
     </div>

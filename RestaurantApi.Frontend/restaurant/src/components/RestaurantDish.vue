@@ -1,4 +1,5 @@
 <template>
+        <p style="text-align: left; margin-left: 4vw;"><a href="/" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Back to Restaurant List</a></p>
     <div class="container" v-if="Dishes.length !== 0">
         <button type="button" class="btn btn-primary addRestaurant" @click="addDish">Add</button>
         <table class="table">
@@ -54,7 +55,7 @@ export default {
             this.Dishes = await getData(`/Dishes?restaurantId=${this.restaurantId}`); 
         },
         addDish() {
-            
+            this.$router.push({ name: 'AddNewDish', query: { restaurantId: this.restaurantId} });
         },
         async BlockDish(id){
             var result = await updateData(`/Block?dishId=${id}`)

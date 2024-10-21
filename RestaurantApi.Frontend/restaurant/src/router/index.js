@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import RestaurantsList from '@/components/RestaurantsList.vue'
 import RestaurantDish from '@/components/RestaurantDish.vue'
 import AddNewRestaurant from '@/components/AddNewRestaurant.vue'
+import AddNewDish from '@/components/AddNewDish.vue'
 
 const routes = [
   {
@@ -19,6 +20,12 @@ const routes = [
     path: '/NewRestaurant',
     name: 'AddNewRestaurant',
     component: AddNewRestaurant
+  },
+  {
+    path: '/AddDish',
+    name: 'AddNewDish',
+    component: AddNewDish,
+    props: (route) => ({ restaurantId: route.query.restaurantId }) 
   },
 ]
 

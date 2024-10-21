@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OrderingApp.Restaurant.Logic.DTO;
 using OrderingApp.Restaurant.Logic.Functions.Command;
 using OrderingApp.Restaurant.Logic.Functions.Query;
 
@@ -53,6 +54,22 @@ namespace OrderingApp.Restaurant.Api.Controllers
             try
             {
                 var result = await _mediator.Send(new UnBlockDishCommand(dishId));
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("/AddDish")]
+        public async Task<IActionResult> AddDish([FromQuery] string restaurantId, [FromBody] NewDishDto dish)
+        {
+            try
+            {
+                var result = await _mediator.Send(new AddDishCommand(restaurantId, dish));
                 return Ok(result);
 
             }
