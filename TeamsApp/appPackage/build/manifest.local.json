@@ -28,7 +28,7 @@
     "staticTabs": [
         {
             "entityId": "index",
-            "name": "OrderingApp",
+            "name": "OrderingAPP",
             "contentUrl": "https://localhost:44302/tab",
             "websiteUrl": "https://localhost:44302/tab",
             "scopes": [

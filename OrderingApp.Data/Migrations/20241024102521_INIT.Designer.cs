@@ -12,8 +12,8 @@ using OrderingApp.Data.DBConfig;
 namespace OrderingApp.Data.Migrations
 {
     [DbContext(typeof(OrderingDbContext))]
-    [Migration("20241021142850_init")]
-    partial class init
+    [Migration("20241024102521_INIT")]
+    partial class INIT
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,33 @@ namespace OrderingApp.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("OrderingApp.Data.Models.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SignupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SignupId");
+
+                    b.ToTable("Comments");
+                });
 
             modelBuilder.Entity("OrderingApp.Data.Models.Dish", b =>
                 {
@@ -484,6 +511,17 @@ namespace OrderingApp.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("OrderingApp.Data.Models.Comment", b =>
+                {
+                    b.HasOne("OrderingApp.Data.Models.OrderSignups", "Signups")
+                        .WithMany("Comments")
+                        .HasForeignKey("SignupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Signups");
+                });
+
             modelBuilder.Entity("OrderingApp.Data.Models.Dish", b =>
                 {
                     b.HasOne("OrderingApp.Data.Models.Restaurant", "Restaurant")
@@ -548,6 +586,8 @@ namespace OrderingApp.Data.Migrations
 
             modelBuilder.Entity("OrderingApp.Data.Models.OrderSignups", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("OrderItems");
                 });
 

@@ -37,6 +37,16 @@ namespace OrderingApp.Logic.Functions.Query.Order
             
             mappedOrderInfo.Author = await _userProfileService.GetUserProfileNameAsync();
 
+            var curentUserId = await _userProfileService.GetUserProfileIdAsync();
+
+            foreach (var x in mappedOrderInfo.Signups)
+            {
+                if (x.SignedUser == curentUserId)
+                    x.IsMySignup = true;
+                else
+                    x.IsMySignup = false;
+            }
+
             return mappedOrderInfo ?? throw new Exception();
         }
     }

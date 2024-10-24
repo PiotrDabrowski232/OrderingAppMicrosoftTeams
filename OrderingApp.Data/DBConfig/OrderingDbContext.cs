@@ -15,6 +15,7 @@ namespace OrderingApp.Data.DBConfig
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderSignups> OrderSignups { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

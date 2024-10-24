@@ -13,33 +13,6 @@ else
     <h3>Dishes Selector</h3>
 
     <div style="margin: 4rem;">
-        @if (!string.IsNullOrEmpty(OrderId.ToString()))
-        {
-            <FluentTooltipProvider />
-
-                <div style="display: flex; align-items: center;">
-                    <FluentSelect Name="Participant" @bind-Value="User" TOption="string" Required Label="Participant">
-                        <FluentOption Value="">Select Participant ...</FluentOption>
-                        @if (IsLoading)
-                        {
-                            <FluentOption>Loading Participants...</FluentOption>
-                        }
-                        else if (CompanyUsers != null && CompanyUsers.Any())
-                        {
-                            foreach (var user in CompanyUsers)
-                            {
-                                <FluentOption Value="@user.Key.ToString()">@user.Value</FluentOption>
-                            }
-                        }
-                        else
-                        {
-                            <FluentOption>No users available</FluentOption>
-                        }
-                    </FluentSelect>
-                </div>
-
-    
-        }
         @if (ListChanged && OrderItems.Any() && Order.MinValue <= SumPrice)
         {
             <div style="text-align: right; margin-top: 1rem;">
@@ -195,7 +168,6 @@ else
     [Parameter]
     public Guid OrderId { get; set; }
 
-    private IDictionary<Guid, string> CompanyUsers = new Dictionary<Guid, string>();
     private List<OrderItemsDto> OrderItems = new List<OrderItemsDto>();
     private MenuDto Menu = new(); 
     private OrderBasicInfoDto Order = new();
@@ -213,8 +185,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        CompanyUsers = await _mediator.Send(new GetComapnyUsersQuery(OrderId));
-
         Restaurant = await _mediator.Send(new GetRestaurantSignedOrderQuery(OrderId));
 
         Menu = await _mediator.Send(new GetRestaurantDishesExtrasQuery(Restaurant));
@@ -267,14 +237,8 @@ else
         try
         {
             
-                if (User == null)
-                    throw new UserNotAsignedException("Select Participant");
 
-                var signed = CompanyUsers.FirstOrDefault(x => x.Key == Guid.Parse(User));
-
-                var orderComleted = await _mediator.Send(new AddCurrentOrderItemsCommand(OrderId,
-                    new OrderSignupsDto { Id = Guid.NewGuid(), SignedUser = signed.Key, UserDisplayName = signed.Value },
-                    OrderItems));
+                var orderComleted = await _mediator.Send(new AddCurrentOrderItemsCommand(OrderId, OrderItems));
 
                 ShowSuccessToast("Assigment created successfully with order items");
 
