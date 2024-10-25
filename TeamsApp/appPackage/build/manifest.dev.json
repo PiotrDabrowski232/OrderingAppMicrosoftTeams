@@ -1,0 +1,52 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.17",
+    "version": "1.0.0",
+    "id": "9a885fde-a202-4aa7-a7e8-7d2ad2b72ab8",
+    "developer": {
+        "name": "Teams App, Inc.",
+        "websiteUrl": "https://www.example.com",
+        "privacyUrl": "https://www.example.com/privacy",
+        "termsOfUseUrl": "https://www.example.com/termsofuse"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "OrderingAppdev",
+        "full": "Full name for OrderingApp"
+    },
+    "description": {
+        "short": "Short description of OrderingApp",
+        "full": "Full description of OrderingApp"
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [],
+    "composeExtensions": [],
+    "configurableTabs": [],
+    "staticTabs": [
+        {
+            "entityId": "index",
+            "name": "OrderingAPP",
+            "contentUrl": "https://ssotab9118f4.azurewebsites.net/tab",
+            "websiteUrl": "https://ssotab9118f4.azurewebsites.net/tab",
+            "scopes": [
+                "personal",
+                "groupChat",
+                "team"
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [
+        "ssotab9118f4.azurewebsites.net"
+    ],
+    "webApplicationInfo": {
+        "id": "94207084-51b1-4321-b038-74ceb4079318",
+        "resource": "api://ssotab9118f4.azurewebsites.net/94207084-51b1-4321-b038-74ceb4079318"
+    }
+}
