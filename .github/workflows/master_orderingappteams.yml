@@ -1,65 +1,68 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - OrderingAppTeams
+name: Build and Deploy Microsoft Teams App - OrderingAppTeams
 
 on:
   push:
     branches:
-      - master
+      - main  # Changed from master to main for consistency with common practices
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Using Ubuntu as the base for the Teams CLI
+
+    env:
+      TEAMSAPP_CLI_VERSION: "3.0.0"  # Version of Teams CLI to use
+      # Add additional environment variables here if needed.
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          dotnet-version: '8.x'
+          node-version: "20.x"  # Ensure you are using a compatible Node.js version
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Install Teams App CLI
+        run: |
+          npm install @microsoft/teamsapp-cli@${{ env.TEAMSAPP_CLI_VERSION }}
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Login to Azure
+        run: |
+          npx teamsapp auth login azure \
+          --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_CLIENT_ID }} \
+          --service-principal true \
+          --tenant ${{ secrets.AZURE_TENANT_ID }} \
+          --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET }} \
+          --interactive false
 
-      - name: Upload artifact for deployment job
+      - name: Package Teams App
+        run: |
+          npx teamsapp package
+
+      - name: Upload App Package
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: artifact
+          path: appPackage/build/appPackage.zip
 
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Use the same OS for deployment
     needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
 
     steps:
-      - name: Download artifact from build job
+      - name: Download App Package
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
+          name: artifact
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0D6F814EB8554E3E8914D599BAB447C9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CECE91E764D34B918BBC61959446D0A4 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_040F04F3786144D8AF2CFBE8D8A1684F }}
+          client-id: ${{ secrets.AZURE_SERVICE_PRINCIPAL_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'OrderingAppTeams'
-          slot-name: 'Production'
-          package: .
-          
+      - name: Deploy to Azure Teams App
+        run: |
+          npx teamsapp deploy --ignore-env-file true --interactive false
