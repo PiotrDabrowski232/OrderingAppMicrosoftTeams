@@ -1,4 +1,5 @@
-﻿using Microsoft.Fast.Components.FluentUI.Components.Tooltip;
+﻿using MediatR;
+using Microsoft.Fast.Components.FluentUI.Components.Tooltip;
 using OrderingApp.Logic.Services;
 using OrderingApp.Logic.Services.Interface;
 using System.Reflection;
