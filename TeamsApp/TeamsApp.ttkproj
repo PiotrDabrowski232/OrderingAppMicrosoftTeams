@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" Sdk="Microsoft.TeamsFx.Sdk">
-  <PropertyGroup Label="Globals">
-    <ProjectGuid>ca2ce5ef-e569-414a-9f15-e20d2b87ce5d</ProjectGuid>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectCapability Include="ProjectConfigurationsDeclaredDimensions" />
-  </ItemGroup>
+<Project Sdk="Microsoft.TeamsFx.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ProjectGuid>ca2ce5ef-e569-414a-9f15-e20d2b87ce5d</ProjectGuid>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.TeamsFx" Version="1.7.0" />
+		<ProjectCapability Include="ProjectConfigurationsDeclaredDimensions" />
+	</ItemGroup>
+
 </Project>

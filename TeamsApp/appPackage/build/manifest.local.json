@@ -24,19 +24,19 @@
     "accentColor": "#FFFFFF",
     "bots": [],
     "composeExtensions": [],
-  "configurableTabs": [],
+    "configurableTabs": [],
     "staticTabs": [
-      {
-        "entityId": "index",
-        "name": "OrderingAPP",
-        "contentUrl": "https://localhost:44302/tab",
-        "websiteUrl": "https://localhost:44302/tab",
-        "scopes": [
-          "personal",
-          "groupChat",
-          "team"
-        ]
-      }
+        {
+            "entityId": "index",
+            "name": "OrderingAPP",
+            "contentUrl": "https://localhost:44302/tab",
+            "websiteUrl": "https://localhost:44302/tab",
+            "scopes": [
+                "personal",
+                "groupChat",
+                "team"
+            ]
+        }
     ],
     "permissions": [
         "identity",
