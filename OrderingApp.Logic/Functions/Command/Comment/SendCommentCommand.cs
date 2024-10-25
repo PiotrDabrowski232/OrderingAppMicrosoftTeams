@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using OrderingApp.Data.DBConfig;
-using OrderingApp.Data.Models;
 using OrderingApp.Logic.DTO;
 using OrderingApp.Logic.Services.Interface;
 
@@ -10,7 +9,7 @@ namespace OrderingApp.Logic.Functions.Command.Comment
     public class SendCommentCommand(CommentDto comment, Guid signupId) : IRequest<Guid>
     {
         public CommentDto Comment { get; set; } = comment;
-        public Guid SignupId { get; set;} = signupId;
+        public Guid SignupId { get; set; } = signupId;
     }
 
     public class SendCommentCommandHandler : BaseRequestHandler<SendCommentCommand, Guid>
@@ -23,7 +22,7 @@ namespace OrderingApp.Logic.Functions.Command.Comment
 
         public override async Task<Guid> Handle(SendCommentCommand request, CancellationToken cancellationToken)
         {
-             await _userProfileService.SendMessage(request.Comment);
+            await _userProfileService.SendMessage(request.Comment);
 
             var comment = new Data.Models.Comment
             {

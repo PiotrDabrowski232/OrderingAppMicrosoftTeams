@@ -13,7 +13,7 @@ else
     <h3>Dishes Selector</h3>
 
     <div style="margin: 4rem;">
-        @if (ListChanged && OrderItems.Any() && Order.MinValue <= SumPrice)
+        @if (ListChanged && OrderItems.Any())
         {
             <div style="text-align: right; margin-top: 1rem;">
                 <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
@@ -64,25 +64,7 @@ else
                     </tr>
                     <tr style="border-top: 3px solid black;">
                         <td colspan="3" style="text-align:end;">Total: </td>
-                        @if (Order.MinValue > SumPrice)
-                        {
-                            <FluentTooltip Anchor="Price" Position=TooltipPosition.End>
-                                <strong>
-                                    Minimal order
-                                    price: @Order.MinValue zł
-                                    Without Delivery
-                                </strong>
-                            </FluentTooltip>
-
-                            <td style="color: red;">
-                                @Math.Round(SumPrice + DeliveryPrice(), 2) zł
-                                <i Id="Price" style="color: black;" class="bi bi-info-circle-fill"></i>
-                            </td>
-                        }
-                        else
-                        {
                             <td>@Math.Round(SumPrice + DeliveryPrice(), 2) zł</td>
-                        }
                         <td></td>
                     </tr>
                 </tbody>

@@ -14,8 +14,8 @@ namespace OrderingApp.Logic.Services
     {
         private readonly TeamsUserCredential _teamsUserCredential;
         private readonly IConfiguration _configuration;
-        private static readonly string[] _scopes = { "User.Read", "User.ReadBasic.All", "ChatMessage.Send", "Chat.ReadWrite" };
-
+        private static readonly string[] _scopes = { "User.Read", "User.ReadBasic.All", "ChatMessage.Send", "Chat.ReadWrite", "Group.Read.All", "Channel.ReadBasic.All", "Team.ReadBasic.All" };
+        private const string appId = "d497c55c-bda3-473e-bcf6-d5dbe5bafd2d";
         private GraphServiceClient? _graphClient;
 
         public UserProfileService(TeamsUserCredential teamsUserCredential, IConfiguration configuration)
@@ -121,6 +121,7 @@ namespace OrderingApp.Logic.Services
                 },
                 Mentions = new List<ChatMessageMention> { mention }
             };
+
 
             await graphClient.Chats[chatId].Messages.PostAsync(chatMessage);
         }
