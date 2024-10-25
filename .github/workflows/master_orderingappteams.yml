@@ -51,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3A41622257E54162A8B97B5D50BC1245 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CFAC991A33D142878C58C515AAA9E963 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4C533BB6526D414DA3301BE8766FBFD7 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0D6F814EB8554E3E8914D599BAB447C9 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CECE91E764D34B918BBC61959446D0A4 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_040F04F3786144D8AF2CFBE8D8A1684F }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -61,5 +61,5 @@ jobs:
         with:
           app-name: 'OrderingAppTeams'
           slot-name: 'Production'
-          package: ${{env.DOTNET_ROOT}}/myapp
+          package: .
           
