@@ -12,8 +12,8 @@ using OrderingApp.Data.DBConfig;
 namespace OrderingApp.Data.Migrations
 {
     [DbContext(typeof(OrderingDbContext))]
-    [Migration("20241025131338_init")]
-    partial class init
+    [Migration("20241025143204_firstMigrationForOrderingApp")]
+    partial class firstMigrationForOrderingApp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
