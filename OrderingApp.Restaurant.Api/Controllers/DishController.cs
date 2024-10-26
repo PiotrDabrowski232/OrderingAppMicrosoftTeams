@@ -14,6 +14,7 @@ namespace OrderingApp.Restaurant.Api.Controllers
         public DishController(IMediator mediator)
         {
             _mediator = mediator;
+
         }
 
         [HttpGet]
