@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - OrderingAppTeams
+name: Build and deploy ASP.NET Core app to Azure Web App - OrderingAppTeams
 
 on:
   push:
@@ -21,17 +18,21 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Build Specific Project
+        run: |
+          dotnet build YourMainAppProject.csproj --configuration Release
+        # Replace 'YourMainAppProject.csproj' with the path to your primary .csproj file.
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Publish Specific Project
+        run: |
+          dotnet publish YourMainAppProject.csproj -c Release -o ${{ runner.temp }}/myapp
+        # Replace 'YourMainAppProject.csproj' with the path to your primary .csproj file.
 
-      - name: Upload artifact for deployment job
+      - name: Upload Artifact for Deployment Job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{ runner.temp }}/myapp
 
   deploy:
     runs-on: windows-latest
@@ -40,10 +41,10 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write
 
     steps:
-      - name: Download artifact from build job
+      - name: Download Artifact from Build Job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
@@ -51,9 +52,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7533FE15589047EF90A4BC8244523D2F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7A69709965204681B47B1EBCB67F1FE7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8AAA351B506042168473A806B3C9AC54 }}
+          client-id: ${{ secrets.__clientidsecretname__ }}
+          tenant-id: ${{ secrets.__tenantidsecretname__ }}
+          subscription-id: ${{ secrets.__subscriptionidsecretname__ }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -61,5 +62,4 @@ jobs:
         with:
           app-name: 'OrderingAppTeams'
           slot-name: 'Production'
-          package: .
-          
+          package: ${{ runner.temp }}/myapp  # Path to the published app directory
