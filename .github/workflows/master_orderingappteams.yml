@@ -1,61 +1,46 @@
-name: Build and Deploy Microsoft Teams App - OrderingAppTeams
+name: Build and Deploy ASP.NET Core App - OrderingAppTeams
 
 on:
   push:
     branches:
-      - main  # Changed from master to main for consistency with common practices
+      - main  # Specify the branch to trigger this workflow
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Using Ubuntu as the base for the Teams CLI
-
-    env:
-      TEAMSAPP_CLI_VERSION: "3.0.0"  # Version of Teams CLI to use
-      # Add additional environment variables here if needed.
+    runs-on: ubuntu-latest  # Using Ubuntu for .NET Core and Node.js
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
         with:
-          node-version: "20.x"  # Ensure you are using a compatible Node.js version
+          dotnet-version: '8.x'  # Specify the .NET SDK version you need
 
-      - name: Install Teams App CLI
-        run: |
-          npm install @microsoft/teamsapp-cli@${{ env.TEAMSAPP_CLI_VERSION }}
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
 
-      - name: Login to Azure
-        run: |
-          npx teamsapp auth login azure \
-          --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_CLIENT_ID }} \
-          --service-principal true \
-          --tenant ${{ secrets.AZURE_TENANT_ID }} \
-          --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_CLIENT_SECRET }} \
-          --interactive false
+      - name: Publish .NET Core Application
+        run: dotnet publish -c Release -o myapp
 
-      - name: Package Teams App
-        run: |
-          npx teamsapp package
-
-      - name: Upload App Package
+      - name: Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
         with:
-          name: artifact
-          path: appPackage/build/appPackage.zip
+          name: aspnetcore-app
+          path: myapp
 
   deploy:
-    runs-on: ubuntu-latest  # Use the same OS for deployment
+    runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: Download App Package
+      - name: Download Artifact from Build Job
         uses: actions/download-artifact@v4
         with:
-          name: artifact
-      
+          name: aspnetcore-app
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -63,6 +48,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy to Azure Teams App
-        run: |
-          npx teamsapp deploy --ignore-env-file true --interactive false
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'OrderingAppTeams'
+          package: myapp  # Path to the published app directory
