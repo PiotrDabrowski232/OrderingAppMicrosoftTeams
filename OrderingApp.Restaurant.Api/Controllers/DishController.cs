@@ -34,27 +34,12 @@ namespace OrderingApp.Restaurant.Api.Controllers
         }
 
         [HttpPut]
-        [Route("/Block")]
+        [Route("/BlockFlag")]
         public async Task<IActionResult> BlockDish([FromQuery] string dishId)
         {
             try
             {
-                var result = await _mediator.Send(new BlockDishCommand(dishId));
-                return Ok(result);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPut]
-        [Route("/UnBlock")]
-        public async Task<IActionResult> UnBlockDish([FromQuery] string dishId)
-        {
-            try
-            {
-                var result = await _mediator.Send(new UnBlockDishCommand(dishId));
+                var result = await _mediator.Send(new ChangeBlockFlagCommand(dishId));
                 return Ok(result);
 
             }
