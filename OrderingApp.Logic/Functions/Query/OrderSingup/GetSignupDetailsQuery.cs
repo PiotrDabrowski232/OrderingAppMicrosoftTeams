@@ -23,6 +23,7 @@ namespace OrderingApp.Logic.Functions.Query.OrderSingup
                 .Where(x => x.SignupId == request.SignupId)
                 .Include(x => x.Signup)
                 .Include(x => x.Dish)
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
 
