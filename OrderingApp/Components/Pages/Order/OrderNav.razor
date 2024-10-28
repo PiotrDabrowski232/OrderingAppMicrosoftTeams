@@ -1,0 +1,60 @@
+﻿@page "/OrderNav"
+
+<div style="padding-left:1.2vw; padding-top:1.5vh;">
+    <FluentTabs ActiveTabId="@activeTabId" >
+        <FluentTab Id="tab-3" @onclick="@(() => OnTabChanged("tab-3"))">
+            <Header>
+                Orders List
+            </Header>
+            <Content>
+                @if (activeTabId == "tab-3")
+
+                {
+                    <Orders />
+                }
+            </Content>
+        </FluentTab>
+        <FluentTab Id="tab-4" @onclick="@(() => OnTabChanged("tab-4"))">
+            <Header>
+                Create New Order
+            </Header>
+            <Content>
+                @if (activeTabId == "tab-4")
+
+                {
+                    <CreateOrder />
+                }
+            </Content>
+        </FluentTab>
+        <FluentTab Id="tab-5" @onclick="@(() => OnTabChanged("tab-5"))">
+            <Header>
+                My Archived Orders
+            </Header>
+            <Content>
+                @if (activeTabId == "tab-5")
+
+                {
+                    <ArchivedOrders />
+                }
+            </Content>
+        </FluentTab>
+    </FluentTabs>
+</div>
+
+@code {
+    private string activeTabId = "tab-3";
+
+
+
+    private void OnTabChanged(string tabId)
+    {
+        if (!string.IsNullOrEmpty(tabId))
+        {
+            activeTabId = tabId;
+
+            StateHasChanged();
+
+        }
+
+    }
+}

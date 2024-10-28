@@ -1,0 +1,128 @@
+﻿@page "/UpdateOrderDetails/{id:guid}"
+
+<BackToMainPageLinker Color="success" Link="/Main/tab-1" CustomText="Back to order list" />
+
+<div style="padding-left:4vw; padding-top:4.5vh;">
+
+    <h3>UpdateOrderDetails</h3>
+
+    <EditForm style="padding-left:3vw; padding-top:3vh;" Model="Order" OnValidSubmit="HandleValidSubmit" novalidate>
+        <DataAnnotationsValidator />
+
+        <FluentStack Orientation="Orientation.Vertical">
+            <div>
+                <FluentTextField Name="Name" @bind-Value="Order.Name" Label="Order Name" Required />
+                <ValidationMessage For="@(() => Order.Name)" />
+            </div>
+
+            <div>
+                <FluentSelect Name="RestaurantName" @bind-Value="Order.RestaurantId" TOption="string" Required Label="Restaurant Picker">
+                    <FluentOption Value="">Select Restaurant ...</FluentOption>
+                    @if (IsLoading)
+                    {
+                        <FluentOption>Loading restaurants...</FluentOption>
+                    }
+                    else if (Restaurants != null && Restaurants.Any())
+                    {
+                        foreach (var restaurant in Restaurants)
+                        {
+                            <FluentOption Value="@restaurant.Key.ToString()">@restaurant.Value</FluentOption>
+                        }
+                    }
+                    else
+                    {
+                        <FluentOption>No restaurants available</FluentOption>
+                    }
+                </FluentSelect>
+                <ValidationMessage For="@(() => Order.RestaurantId)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="MinValue" @bind-Value="Order.MinValue" Label="Min Value" Required />
+                <ValidationMessage For="@(() => Order.MinValue)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="DeliveryCost" @bind-Value="Order.DeliveryCost" Label="Delivery Cost" Required />
+                <ValidationMessage For="@(() => Order.DeliveryCost)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="FreeDeliveryFrom" @bind-Value="Order.FreeDeliveryFrom" Label="Free Delivery From" Required />
+                <ValidationMessage For="@(() => Order.FreeDeliveryFrom)" />
+            </div>
+
+            <div>
+                <FluentNumberField Name="PhoneNumber" @bind-Value="Order.PhoneNumber" Label="Phone Number" Required />
+                <ValidationMessage For="@(() => Order.PhoneNumber)" />
+            </div>
+
+            <div>
+                <FluentTextField Name="BankAccountNumber" @bind-Value="Order.BankAccountNumber" Label="Bank Account Number" Required Style="width:14vw;" />
+                <ValidationMessage For="@(() => Order.BankAccountNumber)" />
+            </div>
+
+            <div>
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Submit</FluentButton>
+            </div>
+        </FluentStack>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private OrderDto Order { get; set; } = new OrderDto();
+    private IDictionary<Guid, string> Restaurants { get; set; } = new Dictionary<Guid, string>();
+    private EditContext editContext;
+    private bool IsLoading { get; set; } = true;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await _mediator.Send(new CreateOrderCommand(Order, id));
+
+            ShowSuccessToast();
+
+            await Task.Delay(2000);
+
+            Navigation.NavigateTo($"/Main/tab-1");
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast(ex);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(Order);
+        try
+        {
+            IsLoading = true;
+
+            Order = await _mediator.Send(new GetOrderForUpdateQuery(id));
+
+            Restaurants = await _mediator.Send(new GetRestaurantNamesQuery()) ?? new Dictionary<Guid, string>();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    private void ShowSuccessToast()
+    {
+        ToastService.ShowToast(ToastIntent.Success, "Order updated successfully!");
+    }
+
+    private void ShowErrorToast(Exception ex)
+    {
+        ToastService.ShowToast(ToastIntent.Error, $"Failed to create order: {ex.Message}");
+    }
+}

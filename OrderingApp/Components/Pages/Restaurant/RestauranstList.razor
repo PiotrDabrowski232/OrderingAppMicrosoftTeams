@@ -1,0 +1,64 @@
+﻿@page "/RestaurantsList"
+
+<div style="padding-left:1.5vw; padding-top:1vh; width:40vw;">
+    <div style="padding-left:35vw; display:flex;">
+        <h4>Filters: </h4>
+        <select class="form-select" aria-label="Type" @onchange="UpdateRestaurants" style="width:fit-content;margin-left: 2vw;">
+            <option value="">Select restaurant type</option>
+            @foreach (var x in Types)
+            {
+                <option value="@x">@x</option>
+            }
+        </select>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Restaurant Name</th>
+                <th scope="col">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in FilteredRestaurants)
+            {
+                <tr>
+                    <td><a href="/Restaurant/@x.Id/@x.Name">@x.Name</a></td>
+                    <td>@x.Type</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    public IQueryable<RestaurantDto> Restaurants { get; set; } = Enumerable.Empty<RestaurantDto>().AsQueryable();
+    public IQueryable<RestaurantDto> FilteredRestaurants { get; set; } = Enumerable.Empty<RestaurantDto>().AsQueryable(); // Filtrowana lista
+    public IList<string> Types { get; set; } = new List<string>();
+
+    public string SelectedType { get; set; } = string.Empty; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var rs = await _mediator.Send(new GetRestaurantsQuery());
+        Restaurants = rs.Item1?.AsQueryable() ?? Enumerable.Empty<RestaurantDto>().AsQueryable();
+        Types = rs.Item2;
+
+        FilteredRestaurants = Restaurants;
+    }
+
+    private void UpdateRestaurants(ChangeEventArgs e)
+    {
+        SelectedType = e.Value?.ToString();
+
+        if (string.IsNullOrEmpty(SelectedType))
+        {
+            FilteredRestaurants = Restaurants;
+        }
+        else
+        {
+            FilteredRestaurants = Restaurants.Where(x => x.Type == SelectedType).AsQueryable();
+        }
+    }
+}

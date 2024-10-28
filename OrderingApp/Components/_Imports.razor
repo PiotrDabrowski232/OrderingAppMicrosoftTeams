@@ -1,0 +1,43 @@
+@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using OrderingApp
+@using OrderingApp.Interop.TeamsSDK;
+@using OrderingApp.Components
+@using Microsoft.Fast.Components.FluentUI;
+@using Microsoft.TeamsFx
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using OrderingApp.Components.Pages.CustomComponents
+@using OrderingApp.Logic.DTO
+
+@using MediatR
+
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+
+@using OrderingApp.Logic.Functions.Command.OrderCommands
+@using OrderingApp.Logic.Functions.Command.OrderItems
+@using OrderingApp.Logic.Functions.Command.SignupCommands
+@using OrderingApp.Logic.Functions.Command.Comment
+
+@using OrderingApp.Logic.Functions.Query.Order
+@using OrderingApp.Logic.Functions.Query.Restaurant
+@using OrderingApp.Logic.Functions.Query.User
+@using OrderingApp.Logic.Functions.Query.OrderSingup
+@using OrderingApp.Logic.Functions.Query.Comment
+
+@using OrderingApp.Logic.Services.Interface
+
+@using OrderingApp.Shared.Exceptions
+
+@inject IMediator _mediator
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+@inject IValueComputationService _valueComputationService
+@inject IUserProfileService _userProfileService
+@inject IJSRuntime _jsRunTime
+@inject MicrosoftTeams _msTeams

@@ -1,0 +1,45 @@
+﻿@page "/Restaurant/{Id:guid}/{Name}"
+
+<BackToMainPageLinker Color="success" Link="/Main/tab-2" CustomText="Back to restaurant list" />
+
+<div style="width:80vw; padding-left:2vw;">
+    <h3>@Name Restaurant Menu</h3>
+
+    <h2>Main Dishes</h2>
+
+    <FluentDataGrid Items="@Main">
+        <PropertyColumn Title="Name" Property="@(p => p.Name)" Sortable="true" />
+        <PropertyColumn Title="Description" Property="@(p => p.Description)" Sortable="true" Style="word-wrap: break-word; white-space: normal; overflow: visible;" />
+        <PropertyColumn Title="Calories" Property="@(p => p.Calories + " cal")" Sortable="true" />
+        <PropertyColumn Title="Price" Property="@(p => p.Price + "zł")" Sortable="true" />
+    </FluentDataGrid>
+
+    <h2>Extras</h2>
+
+    <FluentDataGrid Items="@Extras">
+        <PropertyColumn Title="Name" Property="@(p => p.Name)" Sortable="true" />
+        <PropertyColumn Title="Description" Property="@(p => p.Description)" Sortable="true" Style="word-wrap: break-word; white-space: normal; overflow: visible;"/>
+        <PropertyColumn Title="Calories" Property="@(p => p.Calories + " cal")" Sortable="true" />
+        <PropertyColumn Title="Price" Property="@(p => p.Price + " zł")" Sortable="true" />
+    </FluentDataGrid>
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+    [Parameter]
+    public string Name { get; set; }
+
+    public IQueryable<DishDto> Main { get; set; }
+    public IQueryable<DishDto> Extras { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var dish = await _mediator.Send(new GetRestaurantDishesExtrasQuery(Id));
+
+        Main = dish.Main.AsQueryable();
+        Extras = dish.Extras.AsQueryable();
+    }
+}

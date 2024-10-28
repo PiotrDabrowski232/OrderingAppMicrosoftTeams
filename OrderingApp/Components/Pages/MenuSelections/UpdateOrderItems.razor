@@ -1,0 +1,303 @@
+﻿@page "/Update/OrderSignup/{Id:guid}"
+
+
+@if (isLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <FluentProgressRing />
+    </div>
+}
+else
+{
+    <BackToMainPageLinker Color="Primary" Link="@($"/Orderdetails/{Order.Id.ToString()}")" CustomText="Back to order details" />
+
+    <h4 style="padding-left: 2rem;">Participant: @Participant.UserDisplayName</h4>
+
+    <div style="display: flex; justify-content: flex-end; margin-top: 1rem; margin-right: 8vw; margin-bottom: 1rem;">
+        <div class="btn-group" role="group">
+            @if (ListChanged && OrderItems.Any() && !OrderItems.Any(x => x.Dish.Blocked))
+            {
+                <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
+            }
+            <button type="button" class="btn btn-danger" @onclick="() => DeleteSignup()">Delete</button>
+        </div>
+    </div>
+    <FluentTooltipProvider />
+
+
+    @if (OrderItems.Any())
+    {
+        <div>
+            <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+                <thead>
+                    <tr>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Dish Name</th>
+                        <th scope="col">Calories</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in OrderItems)
+                    {
+                        @if(!x.Dish.Blocked)
+                        {
+
+                            <tr>
+                                <td>@x.Amount</td>
+                                <td>@x.Dish.Name</td>
+                                <td>@x.Dish.Calories cal</td>
+                                <td>@x.Dish.Price zł</td>
+                                <td>
+                                    <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x.Dish)">
+                                        <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                                    </button>
+                                    <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
+                                        <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <FluentTooltip Anchor="@($"{x.Dish.Id + x.Dish.Name}")" Position=TooltipPosition.Bottom>
+                                <strong>
+                                    Remove Blocked Dish
+                                </strong>
+                            </FluentTooltip>
+                            <tr>
+                                <td class="table-danger">
+                                    @x.Amount
+                                    <i Id="@($"{x.Dish.Id + x.Dish.Name}")"  class="bi bi-info-circle-fill"></i>
+                                </td>
+                                <td class="table-danger">@x.Dish.Name</td>
+                                <td class="table-danger">@x.Dish.Calories cal</td>
+                                <td class="table-danger">@x.Dish.Price zł</td>
+                                <td class="table-danger">
+                                    <button style="padding:0;" type="button" class="btn" @onclick="() => RemoveDish(x.Dish)">
+                                        <i style="font-size: 1.5rem;" class="bi bi-patch-minus-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr style="border-top: 3px solid black;">
+                        <td colspan="2" style="text-align:end;">Order Value: </td>
+                        <td>@SumCalories cal</td>
+                        <td>@Math.Round(SumPrice, 2) zł</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:end;">Delivery Price:</td>
+                        <td>@Math.Round(@DeliveryPrice(), 2) zł</td>
+                        <td></td>
+                    </tr>
+                    <tr style="border-top: 3px solid black;">
+                        <td colspan="3" style="text-align:end;">Total: </td>
+                            <td>@Math.Round(SumPrice + DeliveryPrice(), 2) zł</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div>
+        <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+            <thead>
+                <tr>
+                    <th scope="col">Dish Name</th>
+                    <th scope="col">Calories</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Menu.Main)
+                {
+                    <FluentTooltip Anchor="@($"{x.Id}")" Position=TooltipPosition.Bottom>
+                        <strong>
+                            @x.Description
+                        </strong>
+                    </FluentTooltip>
+                    <tr>
+                        <td>
+                            @x.Name
+                            <i Id="@x.Id" style="color: black;" class="bi bi-info-circle-fill"></i>
+                        </td>
+                        <td>@x.Calories cal</td>
+                        <td>@x.Price zł</td>
+                        <td>
+                            <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
+                                <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div style="padding-bottom: 4vh;">
+        <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+            <thead>
+                <tr>
+                    <th scope="col">Dish Name</th>
+                    <th scope="col">Calories</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Menu.Extras)
+                {
+                    <FluentTooltip Anchor="@($"{x.Id}")" Position=TooltipPosition.Bottom>
+                        <strong>
+                            @x.Description
+                        </strong>
+                    </FluentTooltip>
+                    <tr>
+                        <td>
+                            @x.Name
+                            <i Id="@x.Id" style="color: black;" class="bi bi-info-circle-fill"></i>
+                        </td>
+                        <td>@x.Calories cal</td>
+                        <td>@x.Price zł</td>
+                        <td>
+                            <button style="padding:0;" type="button" class="btn" @onclick="() => AddDish(x)">
+                                <i style="font-size: 1.5rem;" class="bi bi-patch-plus-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+@code {
+    [Parameter]
+    public Guid Id {get;set;}
+
+    private int SumCalories;
+    private float SumPrice; 
+    private float Total;
+    private bool isLoading = true;
+    private bool ListChanged = false;
+    private bool FreeDelivery = false;
+
+    private OrderSignupsDto Participant = new();
+    private List<OrderItemsDto> OrderItems = new List<OrderItemsDto>();
+    private MenuDto Menu = new();
+    private OrderBasicInfoDto Order = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var signupDetails = await _mediator.Send(new GetSignupDetailsQuery(Id));
+
+        var restaurant = await _mediator.Send(new GetRestaurantIdSignupQuery(Id));
+
+        Menu = await _mediator.Send(new GetRestaurantDishesExtrasQuery(restaurant));
+
+        Order = await _mediator.Send(new GetOrderBasicConfigurationQuery(Id));
+
+        Total = _valueComputationService.CalculateTotalOrderprice(Order.Id);
+        FreeDelivery = Order.FreeDeliveryFrom <= Total;
+
+        Participant = signupDetails.Item1;
+        OrderItems = signupDetails.Item2;
+
+        isLoading = false;
+
+        Calculate();
+
+        StateHasChanged();
+    }
+
+    private void AddDish(DishDto dish)
+    {
+        if (OrderItems.Any(x => x.Dish.Id == dish.Id))
+            OrderItems.FirstOrDefault(x => x.Dish.Id == dish.Id).Amount++;
+        else
+            OrderItems.Add(new OrderItemsDto
+                {
+                    Amount = 1,
+                    Dish = dish,
+                });
+
+        Total += dish.Price;
+        Calculate();
+
+        ListChanged = true;
+
+        StateHasChanged();
+    }
+
+    private void RemoveDish(DishDto dish)
+    {
+        var orderItem = OrderItems.FirstOrDefault(x => x.Dish.Id == dish.Id);
+
+        if (orderItem.Amount > 1)
+            orderItem.Amount--;
+        else
+            OrderItems.Remove(orderItem);
+
+        Total -= dish.Price;
+        Calculate();
+
+        ListChanged = true;
+
+        StateHasChanged();
+    }
+
+    private void Calculate()
+    {
+        _valueComputationService.CalculateCalories(OrderItems, out SumCalories);
+        _valueComputationService.CalculatePrice(OrderItems, out SumPrice);
+
+        if (Total > Order.FreeDeliveryFrom && !FreeDelivery)
+        {
+            FreeDelivery = true;
+        }
+        else if (Total < Order.FreeDeliveryFrom && FreeDelivery)
+        {
+            FreeDelivery = false;
+        }
+    } 
+
+    private float DeliveryPrice()
+    {
+        if (FreeDelivery)
+            return 0;
+        else
+            return Order.DeliveryCost / Order.OrderSignupCount;
+    }
+
+    private async void SaveChanges()
+    {
+        try
+        {
+            await _mediator.Send(new UpdateOrderItemsCommand(Id, OrderItems));
+            ToastService.ShowSuccess("Order List Updated Successfully");
+        }
+        catch
+        {
+            ToastService.ShowError("Some problems occured");
+        }
+    }
+
+    private async void DeleteSignup()
+    {
+        try
+        {
+            await _mediator.Send(new RemoveSignupCommand(Id));
+            ToastService.ShowSuccess("Signup deleted correctly");
+            await Task.Delay(3000);
+            Navigation.NavigateTo($"/Orderdetails/{Order.Id}");
+        }
+        catch
+        {
+            ToastService.ShowError("Some problems occured");
+        }
+    }
+}

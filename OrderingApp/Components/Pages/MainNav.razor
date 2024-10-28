@@ -1,0 +1,50 @@
+﻿@page "/Main/{Tab?}"
+
+@using OrderingApp.Components.Pages.Order;
+@using OrderingApp.Components.Pages.Restaurant;
+
+    <h3 style="padding-left:1.5vw; padding-top:1vh;">Welcome in OrderApp</h3>
+
+    <h5 style="padding-left:2vw; padding-top:1.5vh;">Here you have several actions</h5>
+
+
+<FluentTabs style="padding-left:3vw; padding-top:2.5vh;" ActiveTabId="@activeTabId">
+    <FluentTab Id="tab-1" @onclick="@(() => OnTabChanged("tab-1"))">
+            <Header>
+                Order
+            </Header>
+            <Content>
+                <OrderNav />
+            </Content>
+        </FluentTab>
+    <FluentTab Id="tab-2" @onclick="@(() => OnTabChanged("tab-2"))">
+            <Header>
+                Restaurants
+            </Header>
+            <Content>
+                <RestaurantBase/>
+            </Content>
+        </FluentTab>
+    </FluentTabs>
+
+@code{
+    [Parameter]
+    public string? Tab { get; set; }
+
+
+    private string activeTabId = "tab-1";
+
+
+    protected override void OnParametersSet() => activeTabId = Tab ?? "tab-1";
+
+        private void OnTabChanged(string tabId)
+        {
+
+            if (!string.IsNullOrEmpty(tabId))
+            {
+                activeTabId = tabId;
+
+                StateHasChanged();
+            }
+        }
+    }

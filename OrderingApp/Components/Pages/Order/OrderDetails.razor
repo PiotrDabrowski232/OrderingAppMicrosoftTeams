@@ -1,0 +1,371 @@
+﻿@page "/Orderdetails/{id:guid}"
+
+
+@if (isLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <FluentProgressRing />
+    </div>
+}
+else
+{
+    <BackToMainPageLinker Color="success" Link="/Main/tab-1" CustomText="Back to order list" />
+
+    <FluentTooltipProvider />
+
+    <div class="modal fade" id="addCommentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addCommentLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addCommentLabel">Add comment for: @ModalUserName</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="comment-history" style="max-height: 300px; overflow-y: auto;">
+                        @if (CommentHistory.Any())
+                        {
+                            @foreach (var comment in CommentHistory)
+                            {
+                                <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; border-radius: 8px; background-color: #f9f9f9;">
+                                    <div style="font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span style="color: #007bff;">@comment.Author</span>
+                                        <span style="color: #888; font-size: 0.9em;">@comment.Date.ToString("dd-MM-yyyy HH:mm")</span>
+                                    </div>
+                                    <div style="color: #333;">
+                                        <p style="margin: 0;">@comment.Description</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p style="color: #999; font-style: italic;">You have not added any comments for this order yet</p>
+                        }
+                    </div>
+
+                    <textarea class="form-control" placeholder="Type your comment here..." @bind="Comment" style="margin-top: 20px; border-radius: 8px; padding: 10px; border: 1px solid #ddd;"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="() => SendComment(new CommentDto{UserDisplayname = ModalUserName, UserId = ModalUserId, Comment = Comment, OrderName = Order.Name, OrderId = Order.Id})">Add Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Order Summary:</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var x in GroupedItems)
+                            {
+                                @if (x.Dish.Blocked)
+                                {
+                                    <FluentTooltip Anchor="@($"{x.Dish.Id}")" Position=TooltipPosition.Bottom>
+                                        <strong>
+                                            Blocked Dish
+                                        </strong>
+                                    </FluentTooltip>
+
+                                    <tr class="table-danger">
+                                        <th>@x.Amount</th>
+                                        <td>
+                                            @x.Dish.Name
+                                            <i Id="@($"{x.Dish.Id}")" class="bi bi-info-circle-fill"></i>
+                                        </td>
+                                        <td>@x.Dish.Price zł</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <th>@x.Amount</th>
+                                        <td>@x.Dish.Name</td>
+                                        <td>@x.Dish.Price zł</td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Order != null)
+    {
+        <div class="d-flex justify-content-between" style="margin: 2rem;">
+            <div class="card shadow-sm" style="flex: 0 0 30%; border-radius: 10%; margin-right: 2rem;">
+                <div class="card-body" style="padding: 2rem;">
+                    <h5 class="card-title">Order Information: </h5>
+                    <p class="card-text"><strong>Order Name:</strong> @Order.Name</p>
+                    <p class="card-text"><strong>Min Value:</strong> @Order.MinValue zł</p>
+                    <p class="card-text"><strong>Delivery Cost:</strong> @Order.DeliveryCost zł</p>
+                    <p class="card-text"><strong>Free Delivery From:</strong> @Order.FreeDeliveryFrom zł</p>
+                    <p class="card-text"><strong>Phone Number:</strong> @Order.PhoneNumber</p>
+                    <p class="card-text"><strong>Bank Account Number:</strong> @Order.BankAccountNumber</p>
+                    <p class="card-text"><strong>Creation Date:</strong> @Order.CreationDate.ToString("HH:mm yyyy-MM-dd")</p>
+                    <p class="card-text"><strong>Restaurant Name:</strong> @Order.RestaurantName</p>
+                    <p class="card-text"><strong>Restaurant Type:</strong> @Order.RestaurantType</p>
+                    <p class="card-text"><strong>Author:</strong> @Order.Author</p>
+
+                    @if (Order.Myorder && Order.IsActive)
+                    {
+                        <button class="btn btn-danger" style="margin-right: 0.5vw;" @onclick="CloseOrder">Close Order</button>
+                    }
+
+                    @if (Order.Signups.Any() && Order.Myorder)
+                        {
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @onclick="OrderedDishes">
+                                Ordered dishes
+                            </button>
+                        }
+                </div>
+            </div>
+
+            <div class="card shadow-sm" style="flex: 0 0 45%; border-radius: 5%; margin-top: 2rem; margin-right:8%;">
+                <div class="card-body" style="display: flex; flex-direction: column; padding: 2rem;">
+                    <h5 class="card-title">Participants:</h5>
+                    @if (Order.Signups != null && Order.Signups.Any())
+                    {
+                        if (Order.IsActive)
+                        {
+                        <ul class="list-group">
+                            @foreach (var participant in Order.Signups)
+                            {
+                                    <li class="list-group-item" style="padding:0.25rem;">
+                                        @if (participant.IsMySignup)
+                                        {
+                                            <a href="/Update/OrderSignup/@participant.Id" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                                @participant.UserDisplayName
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/CollegueDishesSelected/@participant.Id" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                                @participant.UserDisplayName
+                                            </a>
+                                        }
+
+                                        @if (Order.Myorder && !participant.IsMySignup)
+                                        {
+                                            <button style="margin-left: 5%;" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addCommentModal" @onclick="() => OpenCommentModal(participant.UserDisplayName, participant.SignedUser, participant.Id)">
+                                                <i class="bi bi-chat-left-text"></i>
+                                            </button>
+                                        }
+                                    </li>
+                            }
+                            </ul>
+                        }
+                        else
+                        {
+                            <ul class="list-group">
+                                @foreach (var participant in Order.Signups)
+                                {
+                                    <li class="list-group-item" style="padding:0.25rem;">
+                                        <p class="text-secondary">@participant.UserDisplayName</p>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    }
+                    else
+                    {
+                        <p class="card-text">No participants have signed up for this order.</p>
+                    }
+                        <div style="margin-top: auto;">
+                        <div class="p-3 mb-2 bg-success text-white" style="width:fit-content;">You have @Order.Signups.Count() orders</div>
+                        @if (Order.IsActive && !Order.IsSignedUp)
+                        {
+                            <button class="btn btn-primary" style="width: 100%;" @onclick="SignUp">Sign up to order</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-left: 40%; display: ruby;">
+            <div class="card shadow-sm" style="border-radius: 5%; margin-top: 0.2rem; width: fit-content; padding-top:0; ">
+                <div class="card-body" style="display: flex; flex-direction: column;">
+                     <h6 class="card-title">
+                        To get free delivery remains:
+                        @(Math.Round(Order.FreeDeliveryFrom - Total, 2) > 0 ? Math.Round(Order.FreeDeliveryFrom - Total, 2).ToString() + "zł" : "Free") 
+                        <br>
+                        In order to achieve the minimum contract value has been:
+                        @(Math.Round(Order.MinValue - Total, 2) > 0 ? Math.Round(Order.MinValue - Total, 2).ToString() + "zł" : "Achived")
+                    </h6>
+                </div>
+            </div>
+            <div class="card shadow-sm" style="border-radius: 5%; margin-top: 0.2rem; width: fit-content; padding-top:0; margin-left:1vw; ">
+                <div class="card-body" style="display: flex; flex-direction: column;">
+                    <h6 class="card-title">Cost Summary:</h6>
+                    @if(Order.Signups.Count() == 0)
+                    {
+                        <p>This order does not yet have the signups</p>
+                    }
+                    else
+                    {
+                        <table class="table" style="width:fit-content;">
+                            <tbody>
+                                <tr>
+                                    <td style="border:0px; padding-top: 0px; width:fit-content;">Order Value: </td>
+                                    <td style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px;">@Math.Round(Total,2) zł</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:0px; padding-top: 0px;">Delivery:</td>
+                                    @if (Total >= Order.FreeDeliveryFrom)
+                                    {
+                                        <td style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px;">Free Delivery</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px;">@Math.Round(Order.DeliveryCost,2) zł</td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align:right; padding:0px; padding-top: 0px; border-top: 1px solid black; border-bottom: 0px;">
+                                        <i class="bi bi-plus"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    @if (Total >= Order.FreeDeliveryFrom)
+                                    {
+                                        <td colspan="2" style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px; padding-bottom: 0px; color:green;">@Math.Round(Total, 2) zł</td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="2" style="text-align:right; padding-right: 1.5vw; border:0px; padding-top: 0px; padding-bottom: 0px; color:green;">@Math.Round(Total + Order.DeliveryCost, 2) zł</td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            Loading order details...
+        </div>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private OrderInformationDto Order { get; set; } = new();
+    private bool isLoading = true;
+    private float Total;
+    private List<OrderItemsDto> GroupedItems = new();
+    private string Comment = "";
+    private string ModalUserName;
+    private Guid ModalUserId;
+    private Guid SignupId;
+    private List<CommentHistoryDto> CommentHistory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Order = await _mediator.Send(new GetOrderInformationQuery(id));
+
+        Total = _valueComputationService.CalculateTotalOrderprice(id);
+
+        GroupedItems = await _mediator.Send(new DishesPreviewQuery(id));
+
+        isLoading = false;
+
+        StateHasChanged();
+    }
+
+    private async Task OrderedDishes()
+    {
+
+        GroupedItems = await _mediator.Send(new DishesPreviewQuery(id));
+
+        StateHasChanged();
+    }
+
+    private async Task CloseOrder()
+    {
+        try
+        {
+            if (Math.Round(Order.MinValue - Total, 2) > 0)
+            {
+                throw new Exception("The minimum amount has not been reached");
+            }
+
+            await _mediator.Send(new CloseOrderCommand(Order.Id));
+
+            ShowSuccessToast();
+            await Task.Delay(2000);
+            Navigation.NavigateTo($"/Main/tab-1");
+            
+        }
+        catch (BlockedDishException boe)
+        {
+            ShowErrorToast(boe);
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast(ex);
+        }
+    }
+
+    private void SignUp()
+    {
+        Navigation.NavigateTo($"/DishesSelector/OrderId/{id}");
+    }
+
+    private void ShowSuccessToast()
+    {
+        ToastService.ShowToast(ToastIntent.Success, "Order closed successfully");
+    }
+
+    private void ShowErrorToast(Exception ex)
+    {
+        ToastService.ShowToast(ToastIntent.Error, $"{ex.Message}");
+    }
+
+    private async Task SendComment(CommentDto comment)
+    {
+        if (string.IsNullOrEmpty(comment.Comment))
+            ToastService.ShowError("Comment description can't be empty");
+        else
+        {
+            await _mediator.Send(new SendCommentCommand(comment, SignupId));
+            ToastService.ShowSuccess("Comment Send Correctly");
+            Comment = "";
+            CommentHistory = await _mediator.Send(new GetCommentHistoryQuery(SignupId));
+            StateHasChanged();
+        }
+    }
+
+    private async void OpenCommentModal(string userDisplayName, Guid userId, Guid signupId)
+    {
+        CommentHistory = await _mediator.Send(new GetCommentHistoryQuery(signupId));
+        StateHasChanged();
+        ModalUserId = userId;
+        ModalUserName = userDisplayName;
+        Comment = "";
+        SignupId = signupId;
+    }
+}

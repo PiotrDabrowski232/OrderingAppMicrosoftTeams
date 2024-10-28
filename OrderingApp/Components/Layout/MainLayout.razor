@@ -1,0 +1,24 @@
+@inherits LayoutComponentBase
+@inject IHostEnvironment HostEnvironment
+<ErrorBoundary>
+    <ChildContent>
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+                <FluentToastContainer />
+                @Body
+            </Found>
+            <NotFound>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </ChildContent>
+
+    <ErrorContent>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <h1>Oops, something went wrong!</h1>
+            <p>We're sorry, an unexpected error has occurred. Please try again later.</p>
+        </LayoutView>
+    </ErrorContent>
+</ErrorBoundary>

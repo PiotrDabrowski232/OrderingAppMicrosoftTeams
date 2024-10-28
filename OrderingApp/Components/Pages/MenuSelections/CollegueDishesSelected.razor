@@ -1,0 +1,139 @@
+﻿@page "/CollegueDishesSelected/{id:guid}"
+
+@if (isLoading)
+{
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+        <FluentProgressRing />
+    </div>
+}
+else
+{
+    <BackToMainPageLinker Color="Primary" Link="@($"/Orderdetails/{Order.Id.ToString()}")" CustomText="Back to order details" />
+
+    <h4 style="padding-left: 2rem;">Participant: @Participant.UserDisplayName</h4>
+
+    <FluentTooltipProvider />
+
+
+    @if (OrderItems.Any())
+    {
+        <div>
+            <table class="table" style="text-align: center; width: 70%;  margin: auto; margin-bottom:4vh;">
+                <thead>
+                    <tr>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Dish Name</th>
+                        <th scope="col">Calories</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var x in OrderItems)
+                    {
+                        @if (!x.Dish.Blocked)
+                        {
+
+                            <tr>
+                                <td>@x.Amount</td>
+                                <td>@x.Dish.Name</td>
+                                <td>@x.Dish.Calories cal</td>
+                                <td>@x.Dish.Price zł</td>
+                                
+                            </tr>
+                        }
+                        else
+                        {
+                            <FluentTooltip Anchor="@($"{x.Dish.Id + x.Dish.Name}")" Position=TooltipPosition.Bottom>
+                                <strong>
+                                    Remove Blocked Dish
+                                </strong>
+                            </FluentTooltip>
+                            <tr>
+                                <td class="table-danger">
+                                    @x.Amount
+                                    <i Id="@($"{x.Dish.Id + x.Dish.Name}")" class="bi bi-info-circle-fill"></i>
+                                </td>
+                                <td class="table-danger">@x.Dish.Name</td>
+                                <td class="table-danger">@x.Dish.Calories cal</td>
+                                <td class="table-danger">@x.Dish.Price zł</td>
+                            </tr>
+                        }
+                    }
+                    <tr style="border-top: 3px solid black;">
+                        <td colspan="2" style="text-align:end;">Order Value: </td>
+                        <td>@SumCalories cal</td>
+                        <td>@Math.Round(SumPrice, 2) zł</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:end;">Delivery Price:</td>
+                        <td>@Math.Round(@DeliveryPrice(), 2) zł</td>
+                    </tr>
+                    <tr style="border-top: 3px solid black;">
+                        <td colspan="3" style="text-align:end;">Total: </td>
+                        <td>@Math.Round(SumPrice + DeliveryPrice(), 2) zł</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+}
+@code {
+
+    [Parameter]
+    public Guid id { get; set; }
+
+    private int SumCalories;
+    private float SumPrice;
+    private float Total;
+    private bool isLoading = true;
+    private bool FreeDelivery = false;
+
+    private OrderSignupsDto Participant = new();
+    private List<OrderItemsDto> OrderItems = new List<OrderItemsDto>();
+    private OrderBasicInfoDto Order = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var signupDetails = await _mediator.Send(new GetSignupDetailsQuery(id));
+
+        var restaurant = await _mediator.Send(new GetRestaurantIdSignupQuery(id));
+
+        Order = await _mediator.Send(new GetOrderBasicConfigurationQuery(id));
+
+        Total = _valueComputationService.CalculateTotalOrderprice(Order.Id);
+        FreeDelivery = Order.FreeDeliveryFrom <= Total;
+
+        Participant = signupDetails.Item1;
+        OrderItems = signupDetails.Item2;
+
+        isLoading = false;
+
+        Calculate();
+
+        StateHasChanged();
+    }
+
+    private void Calculate()
+    {
+        _valueComputationService.CalculateCalories(OrderItems, out SumCalories);
+        _valueComputationService.CalculatePrice(OrderItems, out SumPrice);
+
+        if (Total > Order.FreeDeliveryFrom && !FreeDelivery)
+        {
+            FreeDelivery = true;
+        }
+        else if (Total < Order.FreeDeliveryFrom && FreeDelivery)
+        {
+            FreeDelivery = false;
+        }
+    }
+
+    private float DeliveryPrice()
+    {
+        if (FreeDelivery)
+            return 0;
+        else
+            return Order.DeliveryCost / Order.OrderSignupCount;
+    }
+}
+

@@ -1,0 +1,16 @@
+﻿<p>
+    <a href="@Link" class="link-@Color link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+        <i class="bi bi-arrow-left" style="font-size:20px;"></i>  @CustomText
+    </a>
+</p>
+
+@code{
+    [Parameter]
+    public string Link { get; set; }
+
+    [Parameter]
+    public string CustomText { get; set; }
+
+    [Parameter]
+    public string Color { get; set; }
+}
