@@ -28,26 +28,24 @@ namespace OrderingApp.Logic.Functions.Query.Order
             var orderInformation = await _dbContext.Orders
                 .Include(x => x.OrderSignups)
                 .Include(x => x.Restaurant)
-                .FirstOrDefaultAsync(x => x.Id == request.Id ,cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             var mappedOrderInfo = _mapper.Map<OrderInformationDto>(orderInformation, opts =>
             {
                 opts.Items["UserId"] = userId;
             });
-            
+
             mappedOrderInfo.Author = await _userProfileService.GetUserProfileNameAsync();
 
-            var curentUserId = await _userProfileService.GetUserProfileIdAsync();
+            var currentUserId = await _userProfileService.GetUserProfileIdAsync();
 
-            foreach (var x in mappedOrderInfo.Signups)
+            mappedOrderInfo.Signups = mappedOrderInfo.Signups.Select(x =>
             {
-                if (x.SignedUser == curentUserId)
-                    x.IsMySignup = true;
-                else
-                    x.IsMySignup = false;
-            }
+                x.IsMySignup = (x.SignedUser == currentUserId);
+                return x;
+            }).ToList();
 
-            return mappedOrderInfo ?? throw new Exception();
+            return mappedOrderInfo;
         }
     }
 }

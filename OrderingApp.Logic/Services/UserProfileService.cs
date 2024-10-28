@@ -50,7 +50,7 @@ namespace OrderingApp.Logic.Services
         public async Task<string> GetUserProfileNameAsync()
         {
             var user = await GetUserProfileAsync();
-            return user.DisplayName ?? throw new WrongProfileCredentialsException();
+            return user.DisplayName;
         }
 
         public async Task<Guid> GetUserProfileIdAsync()

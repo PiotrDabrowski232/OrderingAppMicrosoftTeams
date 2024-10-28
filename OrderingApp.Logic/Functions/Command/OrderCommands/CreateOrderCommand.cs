@@ -45,7 +45,9 @@ namespace OrderingApp.Logic.Functions.Command.OrderCommands
 
                 var existOrder = await _orderService.GetBasicOrderInfo(request.Id, cancellationToken);
 
-                if (await _orderService.OrderNameExist(order.Name, request.Id, cancellationToken))
+                var orderNameExist = await _orderService.OrderNameExist(order.Name, request.Id, cancellationToken);
+
+                if (orderNameExist)
                     throw new EntityExistException("There is Active Order Named this way");
 
 

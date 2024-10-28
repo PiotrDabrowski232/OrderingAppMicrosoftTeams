@@ -31,7 +31,7 @@ namespace OrderingApp.Logic.Functions.Query.Order
                     OrderSignupCount = x.Order.OrderSignups.Count,
                     FreeDeliveryFrom = x.Order.FreeDeliveryFrom,
 
-                }).FirstOrDefaultAsync(cancellationToken) ?? throw new Exception("There aren't provided signup");
+                }).FirstOrDefaultAsync(cancellationToken) ?? new OrderBasicInfoDto();
         }
     }
 }
