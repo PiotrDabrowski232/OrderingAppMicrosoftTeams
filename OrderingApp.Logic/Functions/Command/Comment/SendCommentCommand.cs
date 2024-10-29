@@ -6,10 +6,11 @@ using OrderingApp.Logic.Services.Interface;
 
 namespace OrderingApp.Logic.Functions.Command.Comment
 {
-    public class SendCommentCommand(CommentDto comment, Guid signupId) : IRequest<Guid>
+    public class SendCommentCommand(CommentDto comment, Guid signupId, AppDataDto appData) : IRequest<Guid>
     {
         public CommentDto Comment { get; set; } = comment;
         public Guid SignupId { get; set; } = signupId;
+        public AppDataDto AppData { get; set; } = appData;
     }
 
     public class SendCommentCommandHandler : BaseRequestHandler<SendCommentCommand, Guid>
@@ -22,7 +23,7 @@ namespace OrderingApp.Logic.Functions.Command.Comment
 
         public override async Task<Guid> Handle(SendCommentCommand request, CancellationToken cancellationToken)
         {
-            await _userProfileService.SendMessage(request.Comment);
+            await _userProfileService.SendMessage(request.Comment, request.AppData);
 
             var comment = new Data.Models.Comment
             {

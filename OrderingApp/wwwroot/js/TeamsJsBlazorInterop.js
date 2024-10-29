@@ -35,7 +35,7 @@ export function openLink(deepLink) {
 }
 
 export function navigateToTab(tabInstance) {
-  return microsoftTeams.pages.tabs.navigateToTab(tabInstance);
+    return microsoftTeams.pages.tabs.navigateToTab(tabInstance);
 }
 
 // Settings module

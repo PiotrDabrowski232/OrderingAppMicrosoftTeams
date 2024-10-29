@@ -9,7 +9,7 @@ namespace OrderingApp.Logic.Services.Interface
         public Task<Guid> GetUserProfileIdAsync();
         public Task<string> GetUserProfileNameAsync();
         public Task<List<User>> GetAllUsersAsync();
-        public Task SendMessage(CommentDto comment);
+        public Task SendMessage(CommentDto comment, AppDataDto appData);
 
     }
 }

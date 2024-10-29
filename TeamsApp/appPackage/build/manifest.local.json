@@ -25,19 +25,19 @@
     "bots": [],
     "composeExtensions": [],
     "configurableTabs": [],
-    "staticTabs": [
-        {
-            "entityId": "index",
-            "name": "Home",
-            "contentUrl": "https://localhost:44302/tab",
-            "websiteUrl": "https://localhost:44302/tab",
-            "scopes": [
-                "personal",
-                "groupChat",
-                "team"
-            ]
-        }
-    ],
+  "staticTabs": [
+    {
+      "entityId": "index",
+      "name": "Home",
+      "contentUrl": "https://localhost:44302/tab",
+      "websiteUrl": "https://localhost:44302/tab",
+      "scopes": [
+        "personal",
+        "groupChat",
+        "team"
+      ]
+    }
+  ],
     "permissions": [
         "identity",
         "messageTeamMembers"

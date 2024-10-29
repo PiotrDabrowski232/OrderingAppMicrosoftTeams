@@ -292,6 +292,7 @@ else
         GroupedItems = await _mediator.Send(new DishesPreviewQuery(id));
 
         isLoading = false;
+        var teamsContext = await _msTeams.GetTeamsContextAsync();
 
         StateHasChanged();
     }
@@ -351,7 +352,17 @@ else
             ToastService.ShowError("Comment description can't be empty");
         else
         {
-            await _mediator.Send(new SendCommentCommand(comment, SignupId));
+            var data = await _msTeams.GetTeamsContextAsync();
+            AppDataDto appData = null;
+            if (data.Team?.GroupId != null)
+                appData = new AppDataDto
+                    {
+                        ChannelId = data.Channel.Id,
+                        TeamId = data.Team.GroupId,
+                        EntityId = data.Page.Id
+                    };
+                
+            await _mediator.Send(new SendCommentCommand(comment, SignupId, appData));
             ToastService.ShowSuccess("Comment Send Correctly");
             Comment = "";
             CommentHistory = await _mediator.Send(new GetCommentHistoryQuery(SignupId));
