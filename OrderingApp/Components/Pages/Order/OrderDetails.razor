@@ -10,6 +10,10 @@
 else
 {
     <BackToMainPageLinker Color="success" Link="/Main/tab-1" CustomText="Back to order list" />
+    @if (Order.Myorder)
+    {
+        <button class="btn btn-danger" style="margin-left: 2.5vw;" @onclick="DeleteOrder">Delete Order</button>
+    }
 
     <FluentTooltipProvider />
 
@@ -110,8 +114,10 @@ else
 
     @if (Order != null)
     {
+        <p class="card-text" style="margin-bottom: 0px; margin-top:2vh;margin-left:2.5vw; font-size:larger;"><strong>Order Status:</strong> @Enum.GetName(Order.Status)</p>
+
         <div class="d-flex justify-content-between" style="margin: 2rem;">
-            <div class="card shadow-sm" style="flex: 0 0 30%; border-radius: 10%; margin-right: 2rem;">
+            <div class="card shadow-sm" style="flex: 0 0 45%; border-radius: 10%; margin-right: 2rem;">
                 <div class="card-body" style="padding: 2rem;">
                     <h5 class="card-title">Order Information: </h5>
                     <p class="card-text"><strong>Order Name:</strong> @Order.Name</p>
@@ -125,14 +131,24 @@ else
                     <p class="card-text"><strong>Restaurant Type:</strong> @Order.RestaurantType</p>
                     <p class="card-text"><strong>Author:</strong> @Order.Author</p>
 
-                    @if (Order.Myorder && Order.IsActive)
+                    @if (Order.Myorder)
                     {
-                        <button class="btn btn-danger" style="margin-right: 0.5vw;" @onclick="CloseOrder">Close Order</button>
+                        if (Order.Status != Data.Models.Enum.OrderStatus.Active && Order.Status != Data.Models.Enum.OrderStatus.Closed)
+                        {
+                        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                <button @onclick="() => UpdateStatus(false)" type="button" class="btn btn-warning">Downgrade to @Enum.GetName(Order.Status - 1)</button>
+                                <button @onclick="CloseOrder" type="button" class="btn btn-success">Close order</button>
+                            </div>
+                        }
+                        if (Order.Status == Data.Models.Enum.OrderStatus.Active)
+                        {
+                            <button @onclick="() => UpdateStatus(true)" type="button" class="btn btn-success">Upgrade to @Enum.GetName(Order.Status + 1)</button>
+                        }
                     }
 
                     @if (Order.Signups.Any() && Order.Myorder)
                         {
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @onclick="OrderedDishes">
+                            <button type="button" style="margin-left: 0.5vw;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @onclick="OrderedDishes">
                                 Ordered dishes
                             </button>
                         }
@@ -144,46 +160,51 @@ else
                     <h5 class="card-title">Participants:</h5>
                     @if (Order.Signups != null && Order.Signups.Any())
                     {
-                        if (Order.IsActive)
-                        {
                         <ul class="list-group">
                             @foreach (var participant in Order.Signups)
                             {
                                     <li class="list-group-item" style="padding:0.25rem;">
                                         @if (participant.IsMySignup)
                                         {
-                                            <a href="/Update/OrderSignup/@participant.Id" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                            <a href="" @onclick="() => TransferToOrderItems(participant.Id, true)" class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                                                 @participant.UserDisplayName
                                             </a>
                                         }
                                         else
                                         {
-                                            <a href="/CollegueDishesSelected/@participant.Id" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                            <a href="" @onclick="() => TransferToOrderItems(participant.Id, false)" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                                                 @participant.UserDisplayName
                                             </a>
                                         }
 
-                                        @if (Order.Myorder && !participant.IsMySignup)
+                                        @if(Order.Status != Data.Models.Enum.OrderStatus.Active)
                                         {
-                                            <button style="margin-left: 5%;" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addCommentModal" @onclick="() => OpenCommentModal(participant.UserDisplayName, participant.SignedUser, participant.Id)">
+                                        <p style="width: fit-content; padding-left:1.5vw; padding-right:1.5vw; display: inline;">
+                                            Value:
+                                            @FormatedPrice(participant.SignupValue, participant.IsPaid)
+                                        </p>
+                                        if (Order.Status == Data.Models.Enum.OrderStatus.Progres && Order.Myorder)
+                                        {
+                                            if (!participant.IsPaid)
+                                            {
+                                                <button type="button" @onclick="() => ChangeSignupPaymentStatus(participant.Id)" class="btn btn-success">Mark as paid</button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" @onclick="() => ChangeSignupPaymentStatus(participant.Id)" class="btn btn-danger">Mark as unpaid</button>
+                                            }
+                                        }
+                                    }
+
+                                        @if (Order.Myorder && !participant.IsMySignup && Order.Status != Data.Models.Enum.OrderStatus.Closed)
+                                        {
+                                            <button style="margin-left: 1vw;" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#addCommentModal" @onclick="() => OpenCommentModal(participant.UserDisplayName, participant.SignedUser, participant.Id)">
                                                 <i class="bi bi-chat-left-text"></i>
                                             </button>
                                         }
                                     </li>
                             }
                             </ul>
-                        }
-                        else
-                        {
-                            <ul class="list-group">
-                                @foreach (var participant in Order.Signups)
-                                {
-                                    <li class="list-group-item" style="padding:0.25rem;">
-                                        <p class="text-secondary">@participant.UserDisplayName</p>
-                                    </li>
-                                }
-                            </ul>
-                        }
                     }
                     else
                     {
@@ -191,7 +212,7 @@ else
                     }
                         <div style="margin-top: auto;">
                         <div class="p-3 mb-2 bg-success text-white" style="width:fit-content;">You have @Order.Signups.Count() orders</div>
-                        @if (Order.IsActive && !Order.IsSignedUp)
+                        @if (Order.Status == Data.Models.Enum.OrderStatus.Active && !Order.IsSignedUp)
                         {
                             <button class="btn btn-primary" style="width: 100%;" @onclick="SignUp">Sign up to order</button>
                         }
@@ -314,9 +335,14 @@ else
                 throw new Exception("The minimum amount has not been reached");
             }
 
+            if(Order.Status == Data.Models.Enum.OrderStatus.Progres && Order.Signups.Any(x => !x.IsPaid))
+            {
+                throw new Exception("Not all assignments are marked as paid");
+            }
+
             await _mediator.Send(new CloseOrderCommand(Order.Id));
 
-            ShowSuccessToast();
+            ShowSuccessToast("Order closed successfully");
             await Task.Delay(2000);
             Navigation.NavigateTo($"/Main/tab-1");
 
@@ -331,14 +357,31 @@ else
         }
     }
 
+    private async Task DeleteOrder()
+    {
+        try
+        {
+            await _mediator.Send(new DeleteOrderCommand(Order.Id));
+
+            ShowSuccessToast("Order Removed Successfully");
+            await Task.Delay(2000);
+            Navigation.NavigateTo($"/Main/tab-1");
+
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast(ex);
+        }
+    }
+
     private void SignUp()
     {
         Navigation.NavigateTo($"/DishesSelector/OrderId/{id}");
     }
 
-    private void ShowSuccessToast()
+    private void ShowSuccessToast(string message)
     {
-        ToastService.ShowToast(ToastIntent.Success, "Order closed successfully");
+        ToastService.ShowToast(ToastIntent.Success, message);
     }
 
     private void ShowErrorToast(Exception ex)
@@ -352,16 +395,7 @@ else
             ToastService.ShowError("Comment description can't be empty");
         else
         {
-            var data = await _msTeams.GetTeamsContextAsync();
-            AppDataDto appData = null;
-            if (data.Team?.GroupId != null)
-                appData = new AppDataDto
-                    {
-                        ChannelId = data.Channel.Id,
-                        TeamId = data.Team.GroupId,
-                        EntityId = data.Page.Id
-                    };
-                
+            var appData = await GenerateAppInfo();
             await _mediator.Send(new SendCommentCommand(comment, SignupId, appData));
             ToastService.ShowSuccess("Comment Send Correctly");
             Comment = "";
@@ -378,5 +412,84 @@ else
         ModalUserName = userDisplayName;
         Comment = "";
         SignupId = signupId;
+    }
+
+    private async void UpdateStatus(bool upgrade)
+    {
+        try
+        {
+            if (Order.Status == Data.Models.Enum.OrderStatus.Active && Order.Signups.Count() == 0)
+                throw new Exception("No one signed this order");
+
+            isLoading = true;
+            StateHasChanged();
+
+            var appData = await GenerateAppInfo();
+
+            var orderid = await _mediator.Send(new ChangeOrderStatusCommand(Order.Id, upgrade, appData));
+            Order = await _mediator.Send(new GetOrderInformationQuery(id));
+
+        }
+        catch(Exception ex)
+        {
+            ShowErrorToast(ex);
+            
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void TransferToOrderItems(Guid id, bool myorder)
+    {
+        if (myorder && Order.Status != Data.Models.Enum.OrderStatus.Closed)
+            Navigation.NavigateTo($"/Update/OrderSignup/{id}");
+        else
+            Navigation.NavigateTo($"/CollegueDishesSelected/{id}");
+    }
+
+    private float DeliveryPrice()
+    {
+        if (Total >= Order.FreeDeliveryFrom)
+            return 0;
+        else
+            return Order.DeliveryCost / Order.Signups.Count();
+    }
+
+    private MarkupString FormatedPrice(float price, bool isPaid)
+    {
+        string color = isPaid ? "green" : "red";
+        var SignupPrice = $"<strong style='color: {color};'>{Math.Round(price + DeliveryPrice(), 2)} zł</strong>";
+        return new MarkupString(SignupPrice);
+    }
+
+    private async void ChangeSignupPaymentStatus(Guid id)
+    {
+        isLoading = true;
+
+        var orderid = await _mediator.Send(new ChangePaymentStatusCommand(id));
+
+        Order = await _mediator.Send(new GetOrderInformationQuery(orderid));
+
+        isLoading = false;
+
+        StateHasChanged();
+    }
+
+    private async Task<AppDataDto> GenerateAppInfo()
+    {
+        var data = await _msTeams.GetTeamsContextAsync();
+        AppDataDto appData = null;
+        if (data.Team?.GroupId != null)
+            appData = new AppDataDto
+                {
+                    ChannelId = data.Channel.Id,
+                    TeamId = data.Team.GroupId,
+                    EntityId = data.Page.Id
+                };
+
+        return appData;
     }
 }

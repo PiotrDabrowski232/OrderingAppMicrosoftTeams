@@ -1,4 +1,6 @@
-﻿namespace OrderingApp.Logic.DTO
+﻿using OrderingApp.Data.Models.Enum;
+
+namespace OrderingApp.Logic.DTO
 {
     public class OrderBasicInfoDto
     {
@@ -7,5 +9,6 @@
         public float DeliveryCost { get; set; }
         public int OrderSignupCount { get; set; }
         public float FreeDeliveryFrom { get; set; }
+        public OrderStatus Status { get; set; }
     }
 }

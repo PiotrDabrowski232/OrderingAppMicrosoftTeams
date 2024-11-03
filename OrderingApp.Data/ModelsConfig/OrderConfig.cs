@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderingApp.Data.Models;
+using OrderingApp.Data.Models.Enum;
+using System.Reflection.Emit;
 
 namespace OrderingApp.Data.ModelsConfig
 {
@@ -10,8 +12,10 @@ namespace OrderingApp.Data.ModelsConfig
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.IsActive)
-                .HasDefaultValue(true);
+            builder
+                .Property(o => o.Status)
+                .HasConversion<int>()      
+                .HasDefaultValue(OrderStatus.Active);
 
             builder.Property(x => x.CreationDate)
                 .HasDefaultValueSql("GETDATE()");

@@ -29,5 +29,12 @@ namespace OrderingApp.Logic.Services
                 .SelectMany(x => x.OrderItems.Select(x => x.Amount * x.Dish.Price))
                 .Sum();
         }
+
+        public float CalculateSignupTotalPrice(Guid signup)
+        {
+            return  _dbContext.OrderItems.Where(x => x.Signup.Id == signup)
+                .Include(x => x.Dish)
+                .Sum(x => x.Amount * x.Dish.Price);
+        }
     }
 }

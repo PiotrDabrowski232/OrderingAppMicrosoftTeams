@@ -32,6 +32,7 @@ namespace OrderingApp.Logic.Functions.Command.OrderItems
                 SignedUser = Guid.Parse(userData.Id),
                 UserDisplayName = userData.DisplayName,
                 OrderId = request.OrderId,
+                IsPaid = false
             };
 
             _dbContext.OrderSignups.Add(signup);

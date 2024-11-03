@@ -30,6 +30,7 @@ namespace OrderingApp.Logic.Functions.Query.Order
                     MinValue = x.Order.MinValue,
                     OrderSignupCount = x.Order.OrderSignups.Count,
                     FreeDeliveryFrom = x.Order.FreeDeliveryFrom,
+                    Status = x.Order.Status
 
                 }).FirstOrDefaultAsync(cancellationToken) ?? new OrderBasicInfoDto();
         }

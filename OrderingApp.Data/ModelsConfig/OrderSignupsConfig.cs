@@ -13,6 +13,9 @@ namespace OrderingApp.Data.ModelsConfig
             builder.HasMany(x => x.OrderItems)
                 .WithOne(x => x.Signup)
                 .HasForeignKey(x => x.SignupId);
+
+            builder.Property(x => x.IsPaid)
+                .HasDefaultValue(false);
         }
     }
 }

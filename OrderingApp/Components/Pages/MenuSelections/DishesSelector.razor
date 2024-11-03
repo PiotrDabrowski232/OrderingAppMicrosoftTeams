@@ -218,8 +218,6 @@ else
     {
         try
         {
-            
-
                 var orderComleted = await _mediator.Send(new AddCurrentOrderItemsCommand(OrderId, OrderItems));
 
                 ShowSuccessToast("Assigment created successfully with order items");

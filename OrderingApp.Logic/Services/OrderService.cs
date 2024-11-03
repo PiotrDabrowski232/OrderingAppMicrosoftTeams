@@ -16,7 +16,7 @@ namespace OrderingApp.Logic.Services
         public async Task<bool> OrderNameExist(string name, Guid? Id, CancellationToken cancellationToken)
         {
             return await _dbContext.Orders
-                .Where(x => x.IsActive && x.Name == name && (!Id.HasValue || x.Id != Id.Value))
+                .Where(x => x.Status == Data.Models.Enum.OrderStatus.Active && x.Name == name && (!Id.HasValue || x.Id != Id.Value))
                 .AnyAsync(cancellationToken);
         }
 

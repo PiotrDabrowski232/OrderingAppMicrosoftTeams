@@ -28,10 +28,10 @@ namespace OrderingApp.Logic.Functions.Query.Order
                 .ToListAsync(cancellationToken);
 
             var groupedItems = items
-                .GroupBy(x => x.Dish)
+                .GroupBy(x => x.Dish.Id)
                 .Select(g => new OrderItemsDto
                 {
-                    Dish = _mapper.Map<DishDto>(g.Key),
+                    Dish = _mapper.Map<DishDto>(g.First().Dish),
                     Amount = g.Sum(x => x.Amount)
                 })
                 .ToList();

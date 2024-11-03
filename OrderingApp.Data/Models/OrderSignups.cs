@@ -6,6 +6,7 @@
         public Guid SignedUser { get; set; }
         public string UserDisplayName { get; set; }
         public Guid OrderId { get; set; }
+        public bool IsPaid { get; set; } 
         public virtual Order Order { get; set; }
         public virtual ICollection<OrderItems> OrderItems { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }

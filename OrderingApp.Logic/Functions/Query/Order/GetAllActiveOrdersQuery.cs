@@ -24,7 +24,8 @@ namespace OrderingApp.Logic.Functions.Query.Order
             var userProfileId = await _userProfileService.GetUserProfileIdAsync();
 
             var ordersQuery = await _dbContext.Orders
-                .Where(x => x.IsActive)
+                .Where(x => x.Status == Data.Models.Enum.OrderStatus.Active 
+                || (x.Status == Data.Models.Enum.OrderStatus.Progres && (x.OrderSignups.Any(x => x.SignedUser == userProfileId) || x.CreatedBy == userProfileId)))
                 .Select(x => new OrderDetailsDto
                 {
                     Id = x.Id,
@@ -33,6 +34,7 @@ namespace OrderingApp.Logic.Functions.Query.Order
                     RestaurantName = x.Restaurant.Name,
                     RestaurantType = x.Restaurant.RestaurantType,
                     MyOrder = x.CreatedBy == userProfileId,
+                    Status = x.Status,
                 })
                 .OrderByDescending(x => x.CreationDate)
                 .ToListAsync(cancellationToken);

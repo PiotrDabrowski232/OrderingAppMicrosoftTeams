@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OrderingApp.Data.DBConfig;
+using OrderingApp.Data.Models.Enum;
 using OrderingApp.Logic.Services.Interface;
 using OrderingApp.Shared.Exceptions;
 
@@ -34,7 +35,7 @@ namespace OrderingApp.Logic.Functions.Command.OrderCommands
 
             var order = await _orderService.GetBasicOrderInfo(request.Id, cancellationToken);
 
-                order.IsActive = false;
+                order.Status = OrderStatus.Closed;
 
                 _dbContext.SaveChanges();
 

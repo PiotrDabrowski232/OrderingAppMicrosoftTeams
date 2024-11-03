@@ -10,6 +10,7 @@ namespace OrderingApp.Logic.DTO
         public string RestaurantName { get; set; }
         public RestauranType RestaurantType { get; set; }
         public bool MyOrder { get; set; }
+        public OrderStatus Status { get; set; }
 
     }
 }

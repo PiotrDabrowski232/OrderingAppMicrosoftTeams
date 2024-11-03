@@ -15,7 +15,7 @@ namespace OrderingApp.Logic.Mapper
 
             CreateMap<OrderDto, Order>()
                 .ForMember(dest => dest.RestaurantId, opt => opt.MapFrom(src => Guid.Parse(src.RestaurantId)))
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => OrderStatus.Active))
                 .ForMember(dest => dest.BankAccountNumber, opt => opt.MapFrom(src => Decimal.Parse(src.BankAccountNumber)));
 
 

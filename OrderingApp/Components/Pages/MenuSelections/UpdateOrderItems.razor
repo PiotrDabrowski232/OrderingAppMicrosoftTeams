@@ -19,7 +19,10 @@ else
             {
                 <button type="button" class="btn btn-success" @onclick="() => SaveChanges()">Save Changes</button>
             }
-            <button type="button" class="btn btn-danger" @onclick="() => DeleteSignup()">Delete</button>
+            @if(Order.Status == Data.Models.Enum.OrderStatus.Active)
+            {
+                <button type="button" class="btn btn-danger" @onclick="() => DeleteSignup()">Delete</button>
+            }
         </div>
     </div>
     <FluentTooltipProvider />

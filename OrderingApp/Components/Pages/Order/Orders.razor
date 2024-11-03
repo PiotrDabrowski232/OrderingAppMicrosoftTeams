@@ -18,6 +18,7 @@ else{
                     <th scope="col">Restaurant Name</th>
                     <th scope="col">Restaurant Type</th>
                     <th scope="col">Creation Date</th>
+                    <th scope="col">Status</th>
                     <th style="width:7vw;" scope="col">Actions</th>
                 </tr>
             </thead>
@@ -31,7 +32,15 @@ else{
                         <td>@x.RestaurantName</td>
                         <td>@Enum.GetName(x.RestaurantType)</td>
                         <td>@x.CreationDate</td>
-                        <td>
+                            @if (x.Status == Data.Models.Enum.OrderStatus.Active)
+                            {
+                                <td style=" color:darkgreen;">@Enum.GetName(x.Status)</td>
+                            }
+                            else
+                            {
+                                <td style=" color:blue;">@Enum.GetName(x.Status)</td>
+                            }
+                            <td>
                                 <FluentTooltipProvider />
 
                                 <FluentTooltip Anchor="@($"{x.Name}_{x.CreationDate}")" Position=TooltipPosition.Start>
@@ -65,7 +74,7 @@ else{
                 else
                 {
                     <tr>
-                        <td colspan="5" style="text-align: center;padding-top:4vh;">There aren't any created orders</td>
+                        <td colspan="6" style="text-align: center;padding-top:4vh;">There aren't any created orders</td>
                     </tr>
                 }
             </tbody>

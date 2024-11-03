@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OrderingApp.Data.DBConfig;
+using OrderingApp.Data.Models.Enum;
 using OrderingApp.Logic.DTO;
 using OrderingApp.Logic.Services.Interface;
 
@@ -22,7 +23,7 @@ namespace OrderingApp.Logic.Functions.Query.Order
             var userId = await _userProfileService.GetUserProfileIdAsync();
 
             return await _dbContext.Orders
-                .Where(x => x.CreatedBy == userId && !x.IsActive)
+                .Where(x => (x.CreatedBy == userId || x.OrderSignups.Any(x => x.SignedUser == userId)) && x.Status == OrderStatus.Closed)
                 .Select(x => new OrderDetailsDto
                 {
                     Id = x.Id,
